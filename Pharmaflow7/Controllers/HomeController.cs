@@ -15,7 +15,16 @@ namespace Pharmaflow7.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            
+                var model = new DashboardViewModel
+                {
+                    RegisteredMedicines = 200,
+                    ActiveShipments = 100,
+                    LowStockMedicines = 500,
+                    DailyShipmentRate = 200
+                };
+                return View(model);
+            
         }
 
         public IActionResult Privacy()

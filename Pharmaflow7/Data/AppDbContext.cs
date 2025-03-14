@@ -14,6 +14,7 @@ namespace Pharmaflow7.Data
         }
         public DbSet<UserRegistrationModel> userRegistrationModels { get; set; }
         public DbSet<LoginViewModel> loginViewModels { get; set; }
+        public DbSet<DashboardViewModel> dashboardViewModels { get; set; }
 
     }
 }
