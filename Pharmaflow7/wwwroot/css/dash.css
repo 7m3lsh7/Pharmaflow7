@@ -121,7 +121,7 @@ body {
 
 
 /* الجدول */
-.products {
+/*.products {
     margin-top: 40px;
     background: white;
     padding: 20px;
@@ -171,4 +171,288 @@ td img {
     border: none;
     padding: 5px 10px;
     cursor: pointer;
+}*/
+/*--*/
+/* Root Variables */
+/* Root Variables */
+:root {
+    --primary-color: #007bff; /* Primary color for buttons (edit/add) */
+    --danger-color: #dc3545; /* Danger color for delete */
+    --background-color: #f8f9fa; /* Main background color */
+    --container-bg: #ffffff; /* Container background color */
+    --text-color: #343a40; /* Primary text color */
+    --secondary-text-color: #6c757d; /* Secondary text color */
+    --border-color: #dee2e6; /* Border color */
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+    --hover-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Hover shadow */
+    --font-family: 'Roboto', sans-serif; /* Modern font */
+    --transition: all 0.3s ease; /* Smooth transitions */
+}
+
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    padding: 20px;
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--container-bg);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+}
+
+    .container:hover {
+        box-shadow: var(--hover-shadow);
+    }
+
+h2 {
+    text-align: center;
+    color: var(--text-color);
+    margin-bottom: 25px;
+    font-size: 28px;
+    font-weight: 500;
+}
+
+/* Table Header with Search and Add Button */
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-bar {
+    flex: 1;
+    padding: 12px 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 25px;
+    font-size: 16px;
+    color: var(--text-color);
+    background: var(--container-bg);
+    transition: var(--transition);
+}
+
+    .search-bar:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    }
+
+.add-btn {
+    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+    .add-btn:hover {
+        background-color: #0056b3;
+        box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+    }
+
+/* Table Styles */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--container-bg);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+
+th, td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: #f1f3f5;
+    color: var(--text-color);
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+td {
+    color: var(--secondary-text-color);
+    font-size: 15px;
+}
+
+/* Alternating Row Colors */
+tbody tr:nth-child(even) {
+    background-color: #f8f9fa;
+}
+
+tbody tr:hover {
+    background-color: #e9ecef;
+    transition: var(--transition);
+}
+
+/* Action Buttons */
+.actions button {
+    padding: 8px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    width: 36px;
+    height: 36px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.edit-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+.edit-btn:hover {
+    background-color: #0056b3;
+    box-shadow: 0 4px 8px rgba(0, 123, 255, 0.3);
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+}
+
+/* Image Styling */
+img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* Pagination */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 25px;
+    gap: 8px;
+}
+
+    .pagination button {
+        padding: 8px 16px;
+        border: 1px solid var(--border-color);
+        background: var(--container-bg);
+        color: var(--text-color);
+        cursor: pointer;
+        border-radius: 25px;
+        font-size: 14px;
+        transition: var(--transition);
+    }
+
+        .pagination button:hover {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .pagination button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    thead {
+        display: none;
+    }
+
+    tr {
+        margin-bottom: 15px;
+        border-bottom: 2px solid var(--border-color);
+        background-color: var(--container-bg);
+        border-radius: 8px;
+        box-shadow: var(--shadow);
+    }
+
+    td {
+        text-align: right;
+        padding: 10px 15px;
+        padding-right: 50%;
+        position: relative;
+        border-bottom: none;
+    }
+
+        td:before {
+            content: attr(data-label);
+            position: absolute;
+            right: 15px;
+            font-weight: 500;
+            color: var(--text-color);
+        }
+
+        td.actions {
+            padding-right: 15px;
+        }
+
+    .search-bar {
+        font-size: 14px;
+        padding: 10px 15px;
+    }
+
+    .table-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .add-btn {
+        margin-top: 10px;
+    }
+}
+
+/* Animation for Table Rows */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+tbody tr {
+    animation: fadeIn 0.5s ease-in-out;
 }
