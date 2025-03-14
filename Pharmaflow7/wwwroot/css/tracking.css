@@ -1,0 +1,59 @@
+﻿
+#tracking-container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100vh;
+    padding: 20px;
+    background-color: #f8f9fa; 
+}
+#info-panel {
+    width: 30%;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+    #info-panel h2 {
+        font-size: 22px;
+        font-weight: bold;
+        color: #333;
+        text-align: center;
+    }
+
+    #info-panel p {
+        font-size: 16px;
+        margin: 5px 0;
+        color: #555;
+    }
+    #info-panel button {
+        background: #007bff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 12px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+        #info-panel button:hover {
+            background: #0056b3;
+        }
+#map-container {
+    width: 70%;
+    display: flex;
+    justify-content: flex-end;
+    padding: 10px;
+}
+
+#map {
+    width: 95%;
+    height: 90%;
+    border-radius: 15px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+}
