@@ -9,7 +9,7 @@ using Pharmaflow7.Data;
 using Pharmaflow7.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//l;;;
 // إعداد قاعدة البيانات
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Defaultconnection")));
