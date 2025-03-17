@@ -1,59 +1,89 @@
-﻿
-#tracking-container {
-    display: flex;
-    flex-direction: row;
-    width: 100%;
-    height: 100vh;
-    padding: 20px;
-    background-color: #f8f9fa; 
+﻿/* styles.css */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #084181, #110555);
+    color: white;
+    min-height: 100vh;
+    margin: 0;
+    padding: 0;
 }
-#info-panel {
-    width: 30%;
-    background: white;
+
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 250px;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
     padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
 }
-    #info-panel h2 {
-        font-size: 22px;
+
+    .sidebar h4 {
         font-weight: bold;
-        color: #333;
-        text-align: center;
+        margin-bottom: 30px;
     }
 
-    #info-panel p {
-        font-size: 16px;
-        margin: 5px 0;
-        color: #555;
-    }
-    #info-panel button {
-        background: #007bff;
+    .sidebar a {
         color: white;
-        border: none;
-        border-radius: 8px;
-        padding: 12px;
-        width: 100%;
-        font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: 0.3s;
+        text-decoration: none;
+        display: block;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
     }
-        #info-panel button:hover {
-            background: #0056b3;
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
-#map-container {
-    width: 70%;
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
+
+.content {
+    margin-left: 250px;
+    padding: 30px;
 }
+
+.table {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+    .table th, .table td {
+        border: none;
+        padding: 15px;
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+.btn-primary {
+    background: linear-gradient(45deg, #2d89ef, #66ccff);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+    .btn-primary:hover {
+        background: linear-gradient(45deg, #1e70bf, #55b2e8);
+        transform: scale(1.05);
+    }
 
 #map {
-    width: 95%;
-    height: 90%;
+    height: 400px;
+    width: 100%;
     border-radius: 15px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }

@@ -44,29 +44,6 @@ body {
     padding: 30px;
 }
 
-.card {
-    background: rgba(255, 255, 255, 0.15);
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
-    }
-
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.card-text {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
 .table {
     background: rgba(255, 255, 255, 0.1);
     color: white;
@@ -77,6 +54,7 @@ body {
     .table th, .table td {
         border: none;
         padding: 15px;
+        vertical-align: middle;
     }
 
     .table thead th {
@@ -86,8 +64,8 @@ body {
 .btn-primary {
     background: linear-gradient(45deg, #2d89ef, #66ccff);
     border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
+    padding: 8px 15px;
+    border-radius: 20px;
     transition: all 0.3s ease;
 }
 
@@ -96,8 +74,45 @@ body {
         transform: scale(1.05);
     }
 
-.chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
+.btn-danger {
+    background: linear-gradient(45deg, #ef2d2d, #ff6666);
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
 }
+
+    .btn-danger:hover {
+        background: linear-gradient(45deg, #bf1e1e, #e85555);
+        transform: scale(1.05);
+    }
+
+.modal-content {
+    background: rgba(255, 255, 255, 0.15);
+    border: none;
+    border-radius: 15px;
+    color: white;
+}
+
+.modal-header, .modal-footer {
+    border: none;
+}
+
+.form-control {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    padding: 10px 15px;
+    transition: all 0.3s ease;
+}
+
+    .form-control:focus {
+        border-color: #66ccff;
+        box-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+        color: white;
+    }
+
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
+    }
