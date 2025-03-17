@@ -44,50 +44,38 @@ body {
     padding: 30px;
 }
 
-.card {
+.form-container {
     background: rgba(255, 255, 255, 0.15);
-    border: none;
     border-radius: 15px;
+    padding: 30px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.form-control {
+    background: transparent;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 30px;
+    padding: 12px 20px 12px 50px;
     transition: all 0.3s ease;
 }
 
-    .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+    .form-control:focus {
+        border-color: #66ccff;
+        box-shadow: 0 0 10px rgba(102, 204, 255, 0.5);
+        color: white;
     }
 
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.card-text {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
-.table {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-    .table th, .table td {
-        border: none;
-        padding: 15px;
-    }
-
-    .table thead th {
-        background: rgba(255, 255, 255, 0.2);
+    .form-control::placeholder {
+        color: rgba(255, 255, 255, 0.7);
     }
 
 .btn-primary {
     background: linear-gradient(45deg, #2d89ef, #66ccff);
     border: none;
-    padding: 10px 20px;
+    padding: 12px 30px;
     border-radius: 30px;
+    font-weight: bold;
     transition: all 0.3s ease;
 }
 
@@ -96,8 +84,21 @@ body {
         transform: scale(1.05);
     }
 
-.chart-container {
-    position: relative;
-    height: 300px;
-    width: 100%;
+.input-icon {
+    position: absolute;
+    top: 50%;
+    left: 15px;
+    transform: translateY(-50%);
+    color: rgba(255, 255, 255, 0.7);
 }
+
+#qrCodeContainer {
+    margin-top: 20px;
+    text-align: center;
+}
+
+    #qrCodeContainer img {
+        border-radius: 10px;
+        background: white;
+        padding: 10px;
+    }

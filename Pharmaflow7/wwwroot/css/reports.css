@@ -57,16 +57,6 @@ body {
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
     }
 
-.card-title {
-    font-size: 1.2rem;
-    font-weight: bold;
-}
-
-.card-text {
-    font-size: 2rem;
-    font-weight: bold;
-}
-
 .table {
     background: rgba(255, 255, 255, 0.1);
     color: white;
@@ -77,23 +67,11 @@ body {
     .table th, .table td {
         border: none;
         padding: 15px;
+        vertical-align: middle;
     }
 
     .table thead th {
         background: rgba(255, 255, 255, 0.2);
-    }
-
-.btn-primary {
-    background: linear-gradient(45deg, #2d89ef, #66ccff);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 30px;
-    transition: all 0.3s ease;
-}
-
-    .btn-primary:hover {
-        background: linear-gradient(45deg, #1e70bf, #55b2e8);
-        transform: scale(1.05);
     }
 
 .chart-container {
