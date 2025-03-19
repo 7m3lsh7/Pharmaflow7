@@ -25,5 +25,9 @@ namespace Pharmaflow7.Controllers
         {
             return View();
         }
+        public IActionResult tracking()
+        {
+            return View();
+        }
     }
 }
