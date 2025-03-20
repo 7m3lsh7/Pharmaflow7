@@ -103,33 +103,41 @@ namespace Pharmaflow7.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddProduct(string name, string description)
+        [Authorize(Roles = "company")]
+        public async Task<IActionResult> AddProduct(Product model)
         {
             var user = await _userManager.GetUserAsync(User);
-            if (user == null || user.RoleType != "company")
+            if (user == null || user.RoleType.ToLower() != "company")
             {
-                return RedirectToAction("Register", "Auth");
+                return Unauthorized();
             }
 
-            if (string.IsNullOrEmpty(name))
+            Console.WriteLine($"Received data - Name: {model.Name}, Description: {model.Description}, ProductionDate: {model.ProductionDate}, ExpirationDate: {model.ExpirationDate}");
+
+            if (!ModelState.IsValid)
             {
-                ModelState.AddModelError("Name", "Product name is required.");
-                return View();
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var error in ModelState)
+                {
+                    Console.WriteLine($"Field: {error.Key}, Error: {error.Value.Errors.First().ErrorMessage}");
+                }
+                return BadRequest(ModelState); // أعد تفعيل هذا السطر
             }
 
             var product = new Product
             {
-                Name = name,
-                Description = description ?? string.Empty,
+                Name = model.Name,
+                ProductionDate = model.ProductionDate,
+                ExpirationDate = model.ExpirationDate,
+                Description = model.Description ?? string.Empty,
                 CompanyId = user.Id
             };
 
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("ManageProducts");
+            return Json(new { productId = product.Id });
         }
-
         [HttpGet]
         public async Task<IActionResult> Reports()
         {

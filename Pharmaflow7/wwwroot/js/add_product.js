@@ -1,48 +1,69 @@
-﻿// wwwroot/js/scripts.js
-document.getElementById('addProductForm')?.addEventListener('submit', function(event) {
+﻿document.getElementById('addProductForm').addEventListener('submit', function (event) {
     event.preventDefault();
 
-    const productName = document.getElementById('productName').value.trim();
-    const productionDate = document.getElementById('productionDate').value;
-    const expirationDate = document.getElementById('expirationDate').value;
-    const description = document.getElementById('description').value.trim();
+    const formData = {
+        Name: document.getElementById('productName').value.trim(),
+        ProductionDate: document.getElementById('productionDate').value,
+        ExpirationDate: document.getElementById('expirationDate').value,
+        Description: document.getElementById('description').value.trim()
+    };
 
-    // Basic validation
-    if (!productName || !productionDate || !expirationDate || !description) {
-        alert('Please fill in all fields.');
+    if (!formData.Name) {
+        alert('Please fill in the Name field (required).');
         return;
     }
-    if (new Date(productionDate) >= new Date(expirationDate)) {
+    if (!formData.ProductionDate || !formData.ExpirationDate) {
+        alert('Please fill in Production Date and Expiration Date.');
+        return;
+    }
+    if (new Date(formData.ProductionDate) >= new Date(formData.ExpirationDate)) {
         alert('Expiration date must be after production date.');
         return;
     }
 
-    // Generate unique product ID (for demo purposes, using timestamp)
-    const productId = 'PROD-' + Date.now();
+    console.log('Sending data:', JSON.stringify(formData)); // تسجيل البيانات المُرسلة
 
-    // Data to encode in QR Code
-    const qrData = JSON.stringify({
-        id: productId,
-        name: productName,
-        productionDate: productionDate,
-        expirationDate: expirationDate,
-        description: description
-    });
+    fetch('/Company/AddProduct', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+        },
+        body: JSON.stringify(formData)
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(`Failed to add product: ${response.status} - ${text}`); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            const qrData = JSON.stringify({
+                id: data.productId,
+                name: formData.Name,
+                productionDate: formData.ProductionDate,
+                expirationDate: formData.ExpirationDate,
+                description: formData.Description
+            });
 
-    // Generate QR Code
-    const qrCodeContainer = document.getElementById('qrCodeContainer');
-    const qrCodeDiv = document.getElementById('qrCode');
-    qrCodeDiv.innerHTML = ''; // Clear previous QR code
-    new QRCode(qrCodeDiv, {
-        text: qrData,
-        width: 200,
-        height: 200,
-        colorDark: "#000000",
-        colorLight: "#ffffff"
-    });
+            const qrCodeContainer = document.getElementById('qrCodeContainer');
+            const qrCodeDiv = document.getElementById('qrCode');
+            qrCodeDiv.innerHTML = '';
+            new QRCode(qrCodeDiv, {
+                text: qrData,
+                width: 200,
+                height: 200,
+                colorDark: "#000000",
+                colorLight: "#ffffff"
+            });
 
-    qrCodeContainer.style.display = 'block';
-    alert('Product added successfully! QR Code generated.');
+            qrCodeContainer.style.display = 'block';
+            alert('Product added successfully! QR Code generated.');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert(`An error occurred while adding the product: ${error.message}`);
+        });
 });
 
 function downloadQR() {

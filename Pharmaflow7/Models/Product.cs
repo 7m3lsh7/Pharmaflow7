@@ -4,17 +4,14 @@ namespace Pharmaflow7.Models
 {
     public class Product
     {
-        [Key]
         public int Id { get; set; }
-
         [Required]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
+        public DateTime ProductionDate { get; set; }
+        public DateTime ExpirationDate { get; set; }
+        public string Description { get; set; }
+        public int CompanyId { get; set; }
 
-        public string Description { get; set; } = string.Empty;
 
-        [Required]
-        public int CompanyId { get; set; } // معرف الشركة (مرتبط بـ ApplicationUser.Id)
-
-       
     }
 }
