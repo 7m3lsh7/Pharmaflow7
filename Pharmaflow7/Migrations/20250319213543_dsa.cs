@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class ome5 : Migration
+    public partial class dsa : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -59,56 +59,35 @@ namespace Pharmaflow7.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "dashboardViewModels",
+                name: "Products",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    RegisteredMedicines = table.Column<int>(type: "int", nullable: false),
-                    ActiveShipments = table.Column<int>(type: "int", nullable: false),
-                    LowStockMedicines = table.Column<int>(type: "int", nullable: false),
-                    DailyShipmentRate = table.Column<int>(type: "int", nullable: false)
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_dashboardViewModels", x => x.Id);
+                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
-                name: "loginViewModels",
+                name: "Shipments",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    RememberMe = table.Column<bool>(type: "bit", nullable: false)
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    Destination = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CompanyId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_loginViewModels", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "userRegistrationModels",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
-                    RoleType = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FullName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CompanyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ContactNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DistributorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WarehouseAddress = table.Column<string>(type: "nvarchar(max)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_userRegistrationModels", x => x.Id);
+                    table.PrimaryKey("PK_Shipments", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -276,13 +255,10 @@ namespace Pharmaflow7.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "dashboardViewModels");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "loginViewModels");
-
-            migrationBuilder.DropTable(
-                name: "userRegistrationModels");
+                name: "Shipments");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

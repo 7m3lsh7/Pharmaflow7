@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-sm  d-flex justify-content-center navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">Pharmaflow7</a>
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">PharmaFlow</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -29,26 +29,33 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex ">
                     <ul class="navbar-nav flex-grow-1 justify-content-center">
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="CompanyDashboard">Dashboard</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="AddProduct">Add Product</a>
                         </li>                  
                         <li class="nav-item">  
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="ManageProducts"> Manage Products</a>
                         </li>                  
                         <li class="nav-item">   
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="Index">Track Shipments</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="Reports">Reports</a>
                         </li>
                     </ul>
                 </div>
-                <div class="right-section">
-                    <img src="c:/Users/hp/Downloads/Screenshot_2024-10-30_225832-removebg-preview.png" alt="eva" class="img">
-                    <a class="username">EVA</a>
-                    <button class="notification-btn"><i class="fa-regular fa-bell"></i></button>
+                <div class="m-2 d-flex align-items-center">
+                    <img src="..." alt="eva" class="img">
+                    <p class="username m-2">EVA</p>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <form asp-controller="Auth" asp-action="Logout" method="post" class="m-2">
+                            <button type="submit" class="btn btn-outline-light btn-sm">
+                                <i class="fas fa-sign-out-alt"></i> Logout
+                            </button>
+                        </form>
+                    }
                 </div>
             </div>
           

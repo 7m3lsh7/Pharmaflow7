@@ -15,5 +15,6 @@ namespace Pharmaflow7.Models
         public string? ContactNumber { get; set; } // اختياري (للشركة والموزع)
         public string? DistributorName { get; set; } // اختياري (للموزع)
         public string? WarehouseAddress { get; set; } // اختياري (للموزع)
+
     }
 }

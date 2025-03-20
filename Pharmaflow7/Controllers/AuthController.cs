@@ -2,6 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Pharmaflow7.Models;
+using System;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Pharmaflow7.Controllers
 {
@@ -9,24 +11,30 @@ namespace Pharmaflow7.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
-        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
+        public AuthController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, RoleManager<IdentityRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
+        // عرض صفحة التسجيل
         [HttpGet]
+        [AllowAnonymous]
         public IActionResult Register()
         {
             return View(new UserRegistrationModel());
         }
 
+        // معالجة طلب التسجيل
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public async Task<IActionResult> Register(UserRegistrationModel model)
         {
-            // تسجيل البيانات المُرسلة للتحقق
+            // تسجيل البيانات المُرسلة للتحقق (Debugging)
             Console.WriteLine("📋 البيانات المُرسلة:");
             Console.WriteLine($"Email: {model.Email}");
             Console.WriteLine($"Password: {model.Password}");
@@ -39,10 +47,10 @@ namespace Pharmaflow7.Controllers
             Console.WriteLine($"DistributorName: {model.DistributorName}");
             Console.WriteLine($"WarehouseAddress: {model.WarehouseAddress}");
 
-            // مسح أي أخطاء موجودة في ModelState لنبدأ من جديد
+            // مسح أي أخطاء موجودة في ModelState
             ModelState.Clear();
 
-            // التحقق من الحقول الأساسية (Email, Password, RoleType)
+            // التحقق من الحقول الأساسية
             if (string.IsNullOrEmpty(model.Email))
                 ModelState.AddModelError("Email", "Email is required.");
             if (string.IsNullOrEmpty(model.Password))
@@ -50,36 +58,33 @@ namespace Pharmaflow7.Controllers
             if (string.IsNullOrEmpty(model.RoleType))
                 ModelState.AddModelError("RoleType", "User type is required.");
 
-            // تحقق مخصص بناءً على نوع المستخدم
-            if (model.RoleType == "consumer")
+            // التحقق بناءً على نوع المستخدم
+            switch (model.RoleType)
             {
-                if (string.IsNullOrEmpty(model.FullName))
-                    ModelState.AddModelError("FullName", "Full Name is required for consumers.");
-                // لا نتحقق من حقول الشركة أو الموزع
-            }
-            else if (model.RoleType == "company")
-            {
-                if (string.IsNullOrEmpty(model.CompanyName))
-                    ModelState.AddModelError("CompanyName", "Company Name is required for companies.");
-                if (string.IsNullOrEmpty(model.LicenseNumber))
-                    ModelState.AddModelError("LicenseNumber", "License Number is required for companies.");
-                if (string.IsNullOrEmpty(model.ContactNumber))
-                    ModelState.AddModelError("ContactNumber", "Contact Number is required for companies.");
-                // لا نتحقق من FullName أو DistributorName أو WarehouseAddress
-            }
-            else if (model.RoleType == "distributor")
-            {
-                if (string.IsNullOrEmpty(model.DistributorName))
-                    ModelState.AddModelError("DistributorName", "Distributor Name is required for distributors.");
-                if (string.IsNullOrEmpty(model.WarehouseAddress))
-                    ModelState.AddModelError("WarehouseAddress", "Warehouse Address is required for distributors.");
-                if (string.IsNullOrEmpty(model.ContactNumber))
-                    ModelState.AddModelError("ContactNumber", "Contact Number is required for distributors.");
-                // لا نتحقق من FullName أو CompanyName
-            }
-            else if (!string.IsNullOrEmpty(model.RoleType))
-            {
-                ModelState.AddModelError("RoleType", "Invalid user type.");
+                case "consumer":
+                    if (string.IsNullOrEmpty(model.FullName))
+                        ModelState.AddModelError("FullName", "Full Name is required for consumers.");
+                    break;
+                case "company":
+                    if (string.IsNullOrEmpty(model.CompanyName))
+                        ModelState.AddModelError("CompanyName", "Company Name is required for companies.");
+                    if (string.IsNullOrEmpty(model.LicenseNumber))
+                        ModelState.AddModelError("LicenseNumber", "License Number is required for companies.");
+                    if (string.IsNullOrEmpty(model.ContactNumber))
+                        ModelState.AddModelError("ContactNumber", "Contact Number is required for companies.");
+                    break;
+                case "distributor":
+                    if (string.IsNullOrEmpty(model.DistributorName))
+                        ModelState.AddModelError("DistributorName", "Distributor Name is required for distributors.");
+                    if (string.IsNullOrEmpty(model.WarehouseAddress))
+                        ModelState.AddModelError("WarehouseAddress", "Warehouse Address is required for distributors.");
+                    if (string.IsNullOrEmpty(model.ContactNumber))
+                        ModelState.AddModelError("ContactNumber", "Contact Number is required for distributors.");
+                    break;
+                default:
+                    if (!string.IsNullOrEmpty(model.RoleType))
+                        ModelState.AddModelError("RoleType", "Invalid user type.");
+                    break;
             }
 
             if (!ModelState.IsValid)
@@ -116,15 +121,32 @@ namespace Pharmaflow7.Controllers
             if (result.Succeeded)
             {
                 Console.WriteLine("✅ تم إنشاء المستخدم بنجاح!");
+                // إضافة الدور بناءً على RoleType
+                string roleType = model.RoleType; // "company" من النموذج
+                if (!await _roleManager.RoleExistsAsync(roleType))
+                {
+                    var role = new IdentityRole(roleType);
+                    await _roleManager.CreateAsync(role);
+                }
+
+                await _userManager.AddToRoleAsync(user, model.RoleType);
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction(model.RoleType switch
+                string roleTypeLower = model.RoleType.ToLower();
+                return RedirectToAction(roleTypeLower switch
                 {
                     "consumer" => "ConsumerDashboard",
                     "company" => "CompanyDashboard",
                     "distributor" => "DistributorDashboard",
                     _ => "Index"
-                }, "Home");
-            }
+                }, roleTypeLower switch
+                {
+                    "consumer" => "Consumer",
+                    "company" => "Company",
+                    "distributor" => "Distributor",
+                    _ => "Home"
+                });
+            
+        }
 
             Console.WriteLine("❌ فشل إنشاء المستخدم:");
             foreach (var error in result.Errors)
@@ -136,22 +158,58 @@ namespace Pharmaflow7.Controllers
             return View(model);
         }
 
+        // عرض صفحة تسجيل الدخول
         [HttpGet]
-        public IActionResult Login() => View();
+        [AllowAnonymous]
+        public IActionResult Login(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View(new LoginViewModel());
+        }
 
+        // معالجة طلب تسجيل الدخول
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginViewModel model)
+        [AllowAnonymous]
+        public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
-            if (!ModelState.IsValid) return View(model);
+            ViewData["ReturnUrl"] = returnUrl;
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
             var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-            if (result.Succeeded) return RedirectToAction("Index", "Home");
+            if (result.Succeeded)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    string roleTypeLower = user.RoleType.ToLower();
+                    return RedirectToAction(roleTypeLower switch
+                    {
+                        "consumer" => "ConsumerDashboard",
+                        "company" => "CompanyDashboard",
+                        "distributor" => "DistributorDashboard",
+                        _ => "Index"
+                    }, roleTypeLower switch
+                    {
+                        "consumer" => "Consumer",
+                        "company" => "Company",
+                        "distributor" => "Distributor",
+                        _ => "Home"
+                    });
+                }
+                // إذا لم يتم العثور على المستخدم (نادر الحدوث بعد تسجيل الدخول الناجح)، انتقل إلى الصفحة الرئيسية
+                return RedirectToLocal(returnUrl);
+            }
 
             ModelState.AddModelError("", "Invalid login attempt");
             return View(model);
         }
 
+        // تسجيل الخروج
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Logout()
@@ -159,5 +217,26 @@ namespace Pharmaflow7.Controllers
             await _signInManager.SignOutAsync();
             return RedirectToAction("Login", "Auth");
         }
+
+        // مساعد لإعادة التوجيه إلى ReturnUrl إذا كان صالحًا
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
+        }
     }
+
+   
 }
