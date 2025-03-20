@@ -147,5 +147,9 @@ namespace Pharmaflow7.Controllers
 
             return View(salesData);
         }
+        public IActionResult tracking()
+        {
+            return View();
+        }
     }
 }

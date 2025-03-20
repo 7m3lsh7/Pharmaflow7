@@ -1,6 +1,4 @@
-﻿// scripts.js
-
-// Sample shipment data (to be replaced with real data from Backend)
+﻿// Sample shipment data (replace with backend API call)
 const shipments = [
     { id: 'SH12345', product: 'Paracetamol 500mg', destination: 'Cairo Pharmacy', status: 'In Transit', location: { lat: 30.0444, lng: 31.2357 }, currentLocation: 'Cairo' },
     { id: 'SH12346', product: 'Amoxicillin 250mg', destination: 'Alexandria Dist.', status: 'Delivered', location: { lat: 31.2001, lng: 29.9187 }, currentLocation: 'Alexandria' },
@@ -8,10 +6,10 @@ const shipments = [
 ];
 
 // Load shipments into the table
-function loadShipments() {
+function loadShipments(shipmentData) {
     const tbody = document.getElementById('shipmentTableBody');
     tbody.innerHTML = '';
-    shipments.forEach(shipment => {
+    shipmentData.forEach(shipment => {
         const row = document.createElement('tr');
         row.innerHTML = `
             <td>${shipment.id}</td>
@@ -40,13 +38,12 @@ function initMap() {
             position: shipment.location,
             map: map,
             title: `${shipment.id} - ${shipment.product}`,
-            icon: shipment.status === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' : 
-                  shipment.status === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' : 
-                  'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+            icon: shipment.status === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
+                shipment.status === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
+                    'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
         });
         markers.push(marker);
 
-        // Info window for each marker
         const infoWindow = new google.maps.InfoWindow({
             content: `<h5>${shipment.id}</h5><p>Product: ${shipment.product}</p><p>Status: ${shipment.status}</p><p>Location: ${shipment.currentLocation}</p>`
         });
@@ -69,5 +66,17 @@ function showOnMap(lat, lng, shipmentId) {
     });
 }
 
+// Fetch shipments from backend (example)
+async function fetchShipments() {
+    try {
+        const response = await fetch('/api/shipments'); // Replace with your backend endpoint
+        const shipmentData = await response.json();
+        loadShipments(shipmentData); // Load dynamic data
+    } catch (error) {
+        console.error('Error fetching shipments:', error);
+        loadShipments(shipments); // Fallback to static data
+    }
+}
+
 // Initial load
-loadShipments();
+fetchShipments();
