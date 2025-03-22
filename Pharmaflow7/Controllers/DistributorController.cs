@@ -16,6 +16,7 @@ namespace Pharmaflow7.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
 
         public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager)
+        public IActionResult dashboard()
         {
             _context = context;
             _userManager = userManager;
@@ -47,6 +48,7 @@ namespace Pharmaflow7.Controllers
                 .ToListAsync();
 
             return View(shipments);
+            return View();
         }
 
         [HttpPost]
@@ -55,14 +57,17 @@ namespace Pharmaflow7.Controllers
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null || user.RoleType != "distributor")
-            {
+        public IActionResult Inventory_Management()
+        {
                 return RedirectToAction("Login", "Auth");
-            }
+            return View();
+        }
 
             var shipment = await _context.Shipments
                 .FirstOrDefaultAsync(s => s.Id == id && s.DistributorId == user.Id);
             if (shipment == null)
-            {
+             public IActionResult Track_Shipments()
+        {
                 return NotFound();
             }
 
@@ -73,6 +78,7 @@ namespace Pharmaflow7.Controllers
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Location updated successfully!" });
+            return View();
         }
     }
 }

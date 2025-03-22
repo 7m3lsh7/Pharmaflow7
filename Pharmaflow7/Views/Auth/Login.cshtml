@@ -6,14 +6,7 @@
         box-sizing: border-box;
     }
 
-    body {
-        font-family: 'Cairo', Arial, sans-serif;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: linear-gradient(135deg, #74ebd5, #acb6e5);
-    }
+
 
     .login-container {
         background: white;
@@ -110,18 +103,18 @@
     }
 </style>
 <div class="login-container">
-    <h2>تسجيل الدخول</h2>
+    <h2>Login</h2>
     <form asp-action="Login" method="post">
-        <input asp-for="Email" placeholder="البريد الإلكتروني" required />
-        <input asp-for="Password" type="password" placeholder="كلمة المرور" required />
+        <input asp-for="Email" placeholder="Email" required />
+        <input asp-for="Password" type="password" placeholder="Password" required />
         <label>
-            <input asp-for="RememberMe" type="checkbox" /> تذكرني
+            <input asp-for="RememberMe" type="checkbox" /> Remember Me
         </label>
-        <button type="submit">دخول</button>
+        <button type="submit">Sign In</button>
     </form>
     <div class="social-login">
-        <p>أو سجل الدخول باستخدام</p>
-        <a href="#" class="social-btn google-btn"><i class="fab fa-google"></i> جوجل</a>
-        <a href="#" class="social-btn facebook-btn"><i class="fab fa-facebook-f"></i> فيسبوك</a>
+        <p>Or sign in with</p>
+        <a href="#" class="social-btn google-btn"><i class="fab fa-google"></i> Google</a>
+        <a href="#" class="social-btn facebook-btn"><i class="fab fa-facebook-f"></i> Facebook</a>
     </div>
 </div>
