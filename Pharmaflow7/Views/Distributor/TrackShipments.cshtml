@@ -1,0 +1,8 @@
+﻿@model List<Pharmaflow7.Models.ShipmentViewModel>
+<!-- نفس الكود السابق لـ TrackShipments مع تغيير الروابط في Sidebar إلى DistributorController -->
+<div class="sidebar">
+    <h4>Medicine Tracking</h4>
+    <a href="@Url.Action("DistributorDashboard", "Distributor")"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
+    <a href="#" class="active"><i class="fas fa-truck me-2"></i> Track Shipments</a>
+    <a href="@Url.Action("Logout", "Auth")"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
+</div>

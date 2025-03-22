@@ -71,6 +71,39 @@ function validateStep1() {
     }
 }
 
+function validateStep2() {
+    const userType = document.getElementById('userType').value;
+    let isValid = true;
+
+    if (userType === 'distributor') {
+        const distributorName = document.getElementById('distributorName').value.trim();
+        const warehouseAddress = document.getElementById('warehouseAddress').value.trim();
+        const contactNumber = document.getElementById('distributorContact').value.trim();
+
+        if (!distributorName) {
+            document.getElementById('distributorName').classList.add('is-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('distributorName').classList.remove('is-invalid');
+        }
+        if (!warehouseAddress) {
+            document.getElementById('warehouseAddress').classList.add('is-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('warehouseAddress').classList.remove('is-invalid');
+        }
+        if (!contactNumber) {
+            document.getElementById('distributorContact').classList.add('is-invalid');
+            isValid = false;
+        } else {
+            document.getElementById('distributorContact').classList.remove('is-invalid');
+        }
+    }
+
+    if (isValid) {
+        document.getElementById('signupForm').submit();
+    }
+}
 function loginWithGoogle() {
     alert('Logging in with Google...');
 }

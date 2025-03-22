@@ -1,12 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pharmaflow7.Models
 {
     public class ApplicationUser : IdentityUser
     {
+        [Key]
         public int Id { get; set; }
 
-      
         public string RoleType { get; set; } = string.Empty; // مطلوب دائمًا، لكن نعطيه قيمة افتراضية
         public string? FullName { get; set; } // اختياري (للمستهلك)
         public string? Address { get; set; } // اختياري (للمستهلك)

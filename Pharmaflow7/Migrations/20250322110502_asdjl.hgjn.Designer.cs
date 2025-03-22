@@ -12,8 +12,8 @@ using Pharmaflow7.Data;
 namespace Pharmaflow7.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250320213720_dfs")]
-    partial class dfs
+    [Migration("20250322110502_asdjl.hgjn")]
+    partial class asdjlhgjn
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -308,6 +308,10 @@ namespace Pharmaflow7.Migrations
                     b.Property<int>("CompanyId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime>("ExpirationDate")
                         .HasColumnType("datetime2");
 
@@ -337,9 +341,22 @@ namespace Pharmaflow7.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<double>("CurrentLocationLat")
+                        .HasColumnType("float");
+
+                    b.Property<double>("CurrentLocationLng")
+                        .HasColumnType("float");
+
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("DistributorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("DistributorId1")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
@@ -349,6 +366,10 @@ namespace Pharmaflow7.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DistributorId1");
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Shipments");
                 });
@@ -365,11 +386,15 @@ namespace Pharmaflow7.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CompanyContactNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("CompanyName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("ContactNumber")
+                    b.Property<string>("DistributorContactNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -456,6 +481,25 @@ namespace Pharmaflow7.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("Pharmaflow7.Models.Shipment", b =>
+                {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Distributor")
+                        .WithMany()
+                        .HasForeignKey("DistributorId1")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pharmaflow7.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Distributor");
+
+                    b.Navigation("Product");
                 });
 #pragma warning restore 612, 618
         }
