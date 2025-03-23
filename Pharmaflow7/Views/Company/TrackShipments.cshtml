@@ -14,17 +14,7 @@
     <link rel="stylesheet" href="~/css/dash.css" asp-append-version="true">
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h4>Medicine Tracking</h4>
-        <a href="@Url.Action("CompanyDashboard", "Company")"><i class="fas fa-tachometer-alt me-2"></i> Dashboard</a>
-        <a href="@Url.Action("AddProduct", "Company")"><i class="fas fa-plus-circle me-2"></i> Add Product</a>
-        <a href="@Url.Action("ManageProducts", "Company")"><i class="fas fa-boxes me-2"></i> Manage Products</a>
-        <a href="#" class="active"><i class="fas fa-truck me-2"></i> Track Shipments</a>
-        <a href="@Url.Action("Reports", "Company")"><i class="fas fa-chart-line me-2"></i> Reports</a>
-        <a href="@Url.Action("Logout", "Auth")"><i class="fas fa-sign-out-alt me-2"></i> Logout</a>
-    </div>
-
+   
     <!-- Main Content -->
     <div class="content">
         <h1 class="mb-4">Track Shipments</h1>

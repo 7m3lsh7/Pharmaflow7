@@ -5,7 +5,7 @@
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class fgasdflknd : Migration
+    public partial class oneh : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

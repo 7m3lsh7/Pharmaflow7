@@ -22,8 +22,36 @@ namespace Pharmaflow7.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // لا حاجة لتكوين العلاقات لأننا لن نستخدم Foreign Keys
-            // فقط تأكد من أن الأعمدة موجودة كحقول عادية في الجداول
+            // العلاقة بين Product و ApplicationUser (الشركة المنتجة)
+            modelBuilder.Entity<Product>()
+                .HasOne(p => p.Company)
+                .WithMany()
+                .HasForeignKey(p => p.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict); // ✅ تغيير إلى Restrict بدلاً من NoAction
+
+            // العلاقة بين Shipment و Product
+            modelBuilder.Entity<Shipment>()
+                .HasOne(s => s.Product)
+                .WithMany()
+                .HasForeignKey(s => s.ProductId)
+                .OnDelete(DeleteBehavior.Cascade); // ✅ يسمح بحذف الشحنات عند حذف المنتج
+
+            // العلاقة بين Shipment و Distributor
+            modelBuilder.Entity<Shipment>()
+                .HasOne(s => s.Distributor)
+                .WithMany()
+                .HasForeignKey(s => s.DistributorId)
+                .OnDelete(DeleteBehavior.Restrict); // ✅ تغيير إلى Restrict
+
+            // العلاقة بين Shipment و ApplicationUser (الشركة)
+            modelBuilder.Entity<Shipment>()
+                .HasOne<ApplicationUser>()
+                .WithMany()
+                .HasForeignKey(s => s.CompanyId)
+                .OnDelete(DeleteBehavior.Restrict); // ✅ تغيير إلى Restrict
         }
-    }
+    
+
+
+}
 }

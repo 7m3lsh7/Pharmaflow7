@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class asdjlhgjn : Migration
+    public partial class one : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -87,23 +87,6 @@ namespace Pharmaflow7.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_loginViewModels", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Products",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ProductionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Products", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -236,6 +219,29 @@ namespace Pharmaflow7.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Products",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ProductionDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ExpirationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Products", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Products_AspNetUsers_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Shipments",
                 columns: table => new
                 {
@@ -245,21 +251,26 @@ namespace Pharmaflow7.Migrations
                     Destination = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    CompanyId = table.Column<int>(type: "int", nullable: false),
-                    DistributorId = table.Column<int>(type: "int", nullable: true),
+                    CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    DistributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     CurrentLocationLat = table.Column<double>(type: "float", nullable: false),
-                    CurrentLocationLng = table.Column<double>(type: "float", nullable: false),
-                    DistributorId1 = table.Column<string>(type: "nvarchar(450)", nullable: false)
+                    CurrentLocationLng = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Shipments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Shipments_AspNetUsers_DistributorId1",
-                        column: x => x.DistributorId1,
+                        name: "FK_Shipments_AspNetUsers_CompanyId",
+                        column: x => x.CompanyId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Shipments_AspNetUsers_DistributorId",
+                        column: x => x.DistributorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Shipments_Products_ProductId",
                         column: x => x.ProductId,
@@ -308,9 +319,19 @@ namespace Pharmaflow7.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Shipments_DistributorId1",
+                name: "IX_Products_CompanyId",
+                table: "Products",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shipments_CompanyId",
                 table: "Shipments",
-                column: "DistributorId1");
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shipments_DistributorId",
+                table: "Shipments",
+                column: "DistributorId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Shipments_ProductId",
@@ -352,10 +373,10 @@ namespace Pharmaflow7.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "AspNetUsers");
+                name: "Products");
 
             migrationBuilder.DropTable(
-                name: "Products");
+                name: "AspNetUsers");
         }
     }
 }

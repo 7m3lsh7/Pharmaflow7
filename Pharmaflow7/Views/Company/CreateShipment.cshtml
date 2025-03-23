@@ -1,5 +1,5 @@
 ﻿@model Pharmaflow7.Models.ShipmentViewModel
-<form asp-action="CreateShipment" method="post">
+<form asp-action="CreateShipment" method="post" id="createShipmentForm">
     <div class="mb-3">
         <label>Product</label>
         <select asp-for="ProductId" class="form-control" asp-items="@(new SelectList(Model.Products, "Id", "Name"))"></select>
@@ -24,3 +24,16 @@
     </div>
     <button type="submit" class="btn btn-primary">Create</button>
 </form>
+
+<script>
+    document.getElementById("createShipmentForm").addEventListener("submit", function(e) {
+        console.log("Form submitted with data:");
+        console.log({
+            ProductId: document.getElementById("ProductId").value,
+            Destination: document.getElementById("Destination").value,
+            DistributorId: document.getElementById("DistributorId").value,
+            LocationLat: document.getElementById("LocationLat").value,
+            LocationLng: document.getElementById("LocationLng").value
+        });
+    });
+</script>

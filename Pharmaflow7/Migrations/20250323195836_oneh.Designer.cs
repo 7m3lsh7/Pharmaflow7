@@ -12,15 +12,15 @@ using Pharmaflow7.Data;
 namespace Pharmaflow7.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250322110502_asdjl.hgjn")]
-    partial class asdjlhgjn
+    [Migration("20250323195836_oneh")]
+    partial class oneh
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.2")
+                .HasAnnotation("ProductVersion", "9.0.3")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -305,8 +305,9 @@ namespace Pharmaflow7.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -324,6 +325,8 @@ namespace Pharmaflow7.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Products");
                 });
 
@@ -335,8 +338,9 @@ namespace Pharmaflow7.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CompanyId")
-                        .HasColumnType("int");
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -351,10 +355,7 @@ namespace Pharmaflow7.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("DistributorId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("DistributorId1")
+                    b.Property<string>("DistributorId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -367,7 +368,9 @@ namespace Pharmaflow7.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("DistributorId1");
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("DistributorId");
 
                     b.HasIndex("ProductId");
 
@@ -483,12 +486,29 @@ namespace Pharmaflow7.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pharmaflow7.Models.Product", b =>
+                {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Pharmaflow7.Models.Shipment", b =>
                 {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Pharmaflow7.Models.ApplicationUser", "Distributor")
                         .WithMany()
-                        .HasForeignKey("DistributorId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("DistributorId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Pharmaflow7.Models.Product", "Product")

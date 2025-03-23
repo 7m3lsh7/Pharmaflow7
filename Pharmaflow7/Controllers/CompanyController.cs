@@ -207,7 +207,6 @@ namespace Pharmaflow7.Controllers
             };
             return View(model);
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipment(ShipmentViewModel model)
@@ -218,8 +217,22 @@ namespace Pharmaflow7.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
+            // تجاهل الحقول غير المُرسلة من النموذج
+            ModelState.Remove("Status");
+            ModelState.Remove("Products");
+            ModelState.Remove("ProductName");
+            ModelState.Remove("Distributors");
+            ModelState.Remove("CurrentLocation");
+            ModelState.Remove("DistributorName");
+
             if (!ModelState.IsValid)
             {
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var error in ModelState)
+                {
+                    var errorMessage = error.Value.Errors.Any() ? error.Value.Errors.First().ErrorMessage : "No specific error";
+                    Console.WriteLine($"Field: {error.Key}, Error: {errorMessage}");
+                }
                 model.Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync();
                 model.Distributors = await _userManager.GetUsersInRoleAsync("distributor");
                 return View(model);
@@ -234,11 +247,21 @@ namespace Pharmaflow7.Controllers
                 DistributorId = model.DistributorId,
                 CurrentLocationLat = model.LocationLat,
                 CurrentLocationLng = model.LocationLng
-
             };
 
-            _context.Shipments.Add(shipment);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _context.Shipments.Add(shipment);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Shipment saved successfully with ID: " + shipment.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving shipment: " + ex.Message);
+                model.Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync();
+                model.Distributors = await _userManager.GetUsersInRoleAsync("distributor");
+                return View(model);
+            }
 
             return RedirectToAction("TrackShipments");
         }
@@ -283,7 +306,7 @@ namespace Pharmaflow7.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "company")]
-        public async Task<IActionResult> AddProduct([FromBody]  Product model)
+        public async Task<IActionResult> AddProduct([FromBody] Product model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null || user.RoleType.ToLower() != "company")
@@ -292,6 +315,10 @@ namespace Pharmaflow7.Controllers
             }
 
             Console.WriteLine($"Received data - Name: {model.Name}, Description: {model.Description}, ProductionDate: {model.ProductionDate}, ExpirationDate: {model.ExpirationDate}");
+
+            // تجاهل أخطاء CompanyId وCompany في ModelState
+            ModelState.Remove("CompanyId");
+            ModelState.Remove("Company");
 
             if (!ModelState.IsValid)
             {
@@ -309,7 +336,7 @@ namespace Pharmaflow7.Controllers
                 ProductionDate = model.ProductionDate,
                 ExpirationDate = model.ExpirationDate,
                 Description = model.Description ?? string.Empty,
-                CompanyId = user.Id
+                CompanyId = user.Id // تعيين يدوي
             };
 
             _context.Products.Add(product);
@@ -317,8 +344,6 @@ namespace Pharmaflow7.Controllers
 
             return Json(new { productId = product.Id });
         }
-        
-
 
 
 

@@ -12,8 +12,8 @@ using Pharmaflow7.Data;
 namespace Pharmaflow7.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250323074637_sfss")]
-    partial class sfss
+    [Migration("20250323194851_one")]
+    partial class one
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -307,7 +307,7 @@ namespace Pharmaflow7.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -325,6 +325,8 @@ namespace Pharmaflow7.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId");
+
                     b.ToTable("Products");
                 });
 
@@ -338,7 +340,7 @@ namespace Pharmaflow7.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -365,6 +367,8 @@ namespace Pharmaflow7.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("DistributorId");
 
@@ -482,12 +486,29 @@ namespace Pharmaflow7.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pharmaflow7.Models.Product", b =>
+                {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+                });
+
             modelBuilder.Entity("Pharmaflow7.Models.Shipment", b =>
                 {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Pharmaflow7.Models.ApplicationUser", "Distributor")
                         .WithMany()
                         .HasForeignKey("DistributorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Pharmaflow7.Models.Product", "Product")

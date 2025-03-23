@@ -337,7 +337,7 @@ namespace Pharmaflow7.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
@@ -364,6 +364,8 @@ namespace Pharmaflow7.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
 
                     b.HasIndex("DistributorId");
 
@@ -486,7 +488,7 @@ namespace Pharmaflow7.Migrations
                     b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
                         .WithMany()
                         .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Company");
@@ -494,10 +496,16 @@ namespace Pharmaflow7.Migrations
 
             modelBuilder.Entity("Pharmaflow7.Models.Shipment", b =>
                 {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", null)
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("Pharmaflow7.Models.ApplicationUser", "Distributor")
                         .WithMany()
                         .HasForeignKey("DistributorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Pharmaflow7.Models.Product", "Product")
