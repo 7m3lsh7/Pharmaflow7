@@ -15,6 +15,7 @@ namespace Pharmaflow7.Models
         public string Description { get; set; } = string.Empty;
 
         [Required]
-        public int CompanyId { get; set; }
+        public string CompanyId { get; set; }
+        public ApplicationUser Company { get; set; }
     }
 }

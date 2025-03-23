@@ -19,9 +19,9 @@ namespace Pharmaflow7.Models
         public DateTime CreatedDate { get; set; } = DateTime.Now;
 
         [Required]
-        public int CompanyId { get; set; }
+        public string CompanyId { get; set; }
 
-        public int? DistributorId { get; set; } // معرف الموزع (اختياري)
+        public string DistributorId { get; set; } // معرف الموزع (اختياري)
 
         public double CurrentLocationLat { get; set; }
         public double CurrentLocationLng { get; set; }

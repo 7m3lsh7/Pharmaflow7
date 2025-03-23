@@ -10,7 +10,7 @@
         public string CurrentLocation { get; set; }
         public double LocationLat { get; set; }
         public double LocationLng { get; set; }
-        public int? DistributorId { get; set; }
+        public string? DistributorId { get; set; }
         public string DistributorName { get; set; }
         public IEnumerable<Product> Products { get; set; } // لعرض قائمة المنتجات في Create
         public IEnumerable<ApplicationUser> Distributors { get; set; } // لعرض قائمة الموزعين في Create

@@ -192,8 +192,6 @@ namespace Pharmaflow7.Controllers
             return Json(new { success = true, productId = id, message = "Product deleted successfully!" });
         }
 
-
-        [HttpGet]
         public async Task<IActionResult> CreateShipment()
         {
             var user = await _userManager.GetUserAsync(User);
@@ -236,6 +234,7 @@ namespace Pharmaflow7.Controllers
                 DistributorId = model.DistributorId,
                 CurrentLocationLat = model.LocationLat,
                 CurrentLocationLng = model.LocationLng
+
             };
 
             _context.Shipments.Add(shipment);
@@ -253,7 +252,7 @@ namespace Pharmaflow7.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            int companyId = user.Id;
+            string companyId = user.Id;
             var shipments = await _context.Shipments
                 .Where(s => s.CompanyId == companyId)
                 .Include(s => s.Product)

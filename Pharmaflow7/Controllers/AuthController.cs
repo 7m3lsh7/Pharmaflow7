@@ -118,6 +118,10 @@ namespace Pharmaflow7.Controllers
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "company"); // تأكدي من هذا السطر
+            }
 
             if (result.Succeeded)
             {

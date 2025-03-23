@@ -3,8 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pharmaflow7.Data;
-using Pharmaflow7.Models; // للوصول إلى CompanyDashboardViewModel
-using System.Linq;
+using Pharmaflow7.Models;
 using System.Threading.Tasks;
 
 namespace Pharmaflow7.Controllers
@@ -15,13 +14,20 @@ namespace Pharmaflow7.Controllers
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
+        // البناء (Constructor)
         public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager)
-        public IActionResult dashboard()
         {
             _context = context;
             _userManager = userManager;
         }
 
+        // دالة Dashboard
+        public IActionResult Dashboard()
+        {
+            return View();
+        }
+
+        // عرض الشحنات المعينة للموزع
         [HttpGet]
         public async Task<IActionResult> TrackShipments()
         {
@@ -31,7 +37,7 @@ namespace Pharmaflow7.Controllers
                 return RedirectToAction("Login", "Auth");
             }
 
-            int distributorId = user.Id;
+            string distributorId = user.Id;
             var shipments = await _context.Shipments
                 .Where(s => s.DistributorId == distributorId)
                 .Include(s => s.Product)
@@ -48,26 +54,23 @@ namespace Pharmaflow7.Controllers
                 .ToListAsync();
 
             return View(shipments);
-            return View();
         }
 
+        // تحديث موقع الشحنة
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> UpdateShipmentLocation(int id, double lat, double lng)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null || user.RoleType != "distributor")
-        public IActionResult Inventory_Management()
-        {
+            {
                 return RedirectToAction("Login", "Auth");
-            return View();
-        }
+            }
 
             var shipment = await _context.Shipments
                 .FirstOrDefaultAsync(s => s.Id == id && s.DistributorId == user.Id);
             if (shipment == null)
-             public IActionResult Track_Shipments()
-        {
+            {
                 return NotFound();
             }
 
@@ -78,6 +81,11 @@ namespace Pharmaflow7.Controllers
             await _context.SaveChangesAsync();
 
             return Json(new { success = true, message = "Location updated successfully!" });
+        }
+
+        // إدارة المخزون
+        public IActionResult InventoryManagement() // تغيير الاسم إلى InventoryManagement لاتباع تسمية C#
+        {
             return View();
         }
     }

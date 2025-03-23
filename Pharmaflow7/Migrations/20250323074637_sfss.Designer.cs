@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pharmaflow7.Data;
 
@@ -11,9 +12,11 @@ using Pharmaflow7.Data;
 namespace Pharmaflow7.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250323074637_sfss")]
+    partial class sfss
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -304,7 +307,7 @@ namespace Pharmaflow7.Migrations
 
                     b.Property<string>("CompanyId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -321,8 +324,6 @@ namespace Pharmaflow7.Migrations
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CompanyId");
 
                     b.ToTable("Products");
                 });
@@ -479,17 +480,6 @@ namespace Pharmaflow7.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Pharmaflow7.Models.Product", b =>
-                {
-                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
-                        .WithMany()
-                        .HasForeignKey("CompanyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Company");
                 });
 
             modelBuilder.Entity("Pharmaflow7.Models.Shipment", b =>
