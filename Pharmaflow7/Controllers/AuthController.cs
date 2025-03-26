@@ -43,7 +43,8 @@ namespace Pharmaflow7.Controllers
             Console.WriteLine($"Address: {model.Address}");
             Console.WriteLine($"CompanyName: {model.CompanyName}");
             Console.WriteLine($"LicenseNumber: {model.LicenseNumber}");
-            Console.WriteLine($"ContactNumber: {model.ContactNumber}");
+            Console.WriteLine($"ContactNumber: {model.CompanyContactNumber}");
+            Console.WriteLine($"ContactNumber: {model.DistributorContactNumber}");
             Console.WriteLine($"DistributorName: {model.DistributorName}");
             Console.WriteLine($"WarehouseAddress: {model.WarehouseAddress}");
 
@@ -70,16 +71,16 @@ namespace Pharmaflow7.Controllers
                         ModelState.AddModelError("CompanyName", "Company Name is required for companies.");
                     if (string.IsNullOrEmpty(model.LicenseNumber))
                         ModelState.AddModelError("LicenseNumber", "License Number is required for companies.");
-                    if (string.IsNullOrEmpty(model.ContactNumber))
-                        ModelState.AddModelError("ContactNumber", "Contact Number is required for companies.");
+                    if (string.IsNullOrEmpty(model.CompanyContactNumber))
+                        ModelState.AddModelError("CompanyContactNumber", "Contact Number is required for companies.");
                     break;
                 case "distributor":
                     if (string.IsNullOrEmpty(model.DistributorName))
                         ModelState.AddModelError("DistributorName", "Distributor Name is required for distributors.");
                     if (string.IsNullOrEmpty(model.WarehouseAddress))
                         ModelState.AddModelError("WarehouseAddress", "Warehouse Address is required for distributors.");
-                    if (string.IsNullOrEmpty(model.ContactNumber))
-                        ModelState.AddModelError("ContactNumber", "Contact Number is required for distributors.");
+                    if (string.IsNullOrEmpty(model.DistributorContactNumber))
+                        ModelState.AddModelError("DistributorContactNumber", "Contact Number is required for distributors.");
                     break;
                 default:
                     if (!string.IsNullOrEmpty(model.RoleType))
@@ -111,12 +112,16 @@ namespace Pharmaflow7.Controllers
                 Address = model.Address,
                 CompanyName = model.CompanyName,
                 LicenseNumber = model.LicenseNumber,
-                ContactNumber = model.ContactNumber,
+                ContactNumber = model.RoleType == "company" ? model.CompanyContactNumber : model.RoleType == "distributor" ? model.DistributorContactNumber : null,
                 DistributorName = model.DistributorName,
                 WarehouseAddress = model.WarehouseAddress
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
+            {
+                await _userManager.AddToRoleAsync(user, "company"); // تأكدي من هذا السطر
+            }
 
             if (result.Succeeded)
             {
@@ -136,7 +141,7 @@ namespace Pharmaflow7.Controllers
                 {
                     "consumer" => "ConsumerDashboard",
                     "company" => "CompanyDashboard",
-                    "distributor" => "DistributorDashboard",
+                    "distributor" => "dashboard",
                     _ => "Index"
                 }, roleTypeLower switch
                 {

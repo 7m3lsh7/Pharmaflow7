@@ -78,14 +78,14 @@ namespace Pharmaflow7.Controllers
 
             return View(viewModel);
         }
-
+        // عرض قائمة المنتجات
         [HttpGet]
         public async Task<IActionResult> ManageProducts()
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null || user.RoleType != "company")
             {
-                return RedirectToAction("Register", "Auth");
+                return RedirectToAction("Login", "Auth");
             }
 
             var products = await _context.Products
@@ -94,6 +94,208 @@ namespace Pharmaflow7.Controllers
 
             return View(products);
         }
+
+        // عرض نموذج تعديل المنتج
+        [HttpGet]
+        public async Task<IActionResult> EditProduct(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == id && p.CompanyId == user.Id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            var model = new ProductViewModel
+            {
+                Id = product.Id,
+                Name = product.Name,
+                ProductionDate = product.ProductionDate,
+                ExpirationDate = product.ExpirationDate,
+                Description = product.Description
+            };
+
+            return PartialView("_EditProductModal", model); // إرجاع نموذج Modal كـ Partial View
+        }
+
+        // معالجة تعديل المنتج
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditProduct(ProductViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return PartialView("_EditProductModal", model);
+            }
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == model.Id && p.CompanyId == user.Id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            if (model.ProductionDate >= model.ExpirationDate)
+            {
+                ModelState.AddModelError("ExpirationDate", "Expiration date must be after production date.");
+                return PartialView("_EditProductModal", model);
+            }
+
+            product.Name = model.Name;
+            product.ProductionDate = model.ProductionDate;
+            product.ExpirationDate = model.ExpirationDate;
+            product.Description = model.Description;
+
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, message = "Product updated successfully!" });
+        }
+
+        // حذف المنتج
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.Id == id && p.CompanyId == user.Id);
+
+            if (product == null)
+            {
+                return Json(new { success = false, message = "Product not found." });
+            }
+
+            _context.Products.Remove(product);
+            await _context.SaveChangesAsync();
+
+            // إرجاع رد JSON مع معرف السطر ليتم إزالته ديناميكيًا
+            return Json(new { success = true, productId = id, message = "Product deleted successfully!" });
+        }
+
+        public async Task<IActionResult> CreateShipment()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var model = new ShipmentViewModel
+            {
+                Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync(),
+                Distributors = await _userManager.GetUsersInRoleAsync("distributor")
+            };
+            return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateShipment(ShipmentViewModel model)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            // تجاهل الحقول غير المُرسلة من النموذج
+            ModelState.Remove("Status");
+            ModelState.Remove("Products");
+            ModelState.Remove("ProductName");
+            ModelState.Remove("Distributors");
+            ModelState.Remove("CurrentLocation");
+            ModelState.Remove("DistributorName");
+
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState is invalid:");
+                foreach (var error in ModelState)
+                {
+                    var errorMessage = error.Value.Errors.Any() ? error.Value.Errors.First().ErrorMessage : "No specific error";
+                    Console.WriteLine($"Field: {error.Key}, Error: {errorMessage}");
+                }
+                model.Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync();
+                model.Distributors = await _userManager.GetUsersInRoleAsync("distributor");
+                return View(model);
+            }
+
+            var shipment = new Shipment
+            {
+                ProductId = model.ProductId,
+                Destination = model.Destination,
+                Status = "Pending",
+                CompanyId = user.Id,
+                DistributorId = model.DistributorId,
+                CurrentLocationLat = model.LocationLat,
+                CurrentLocationLng = model.LocationLng
+            };
+
+            try
+            {
+                _context.Shipments.Add(shipment);
+                await _context.SaveChangesAsync();
+                Console.WriteLine("Shipment saved successfully with ID: " + shipment.Id);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error saving shipment: " + ex.Message);
+                model.Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync();
+                model.Distributors = await _userManager.GetUsersInRoleAsync("distributor");
+                return View(model);
+            }
+
+            return RedirectToAction("TrackShipments");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TrackShipments()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                return RedirectToAction("Login", "Auth");
+            }
+
+            string companyId = user.Id;
+            var shipments = await _context.Shipments
+                .Where(s => s.CompanyId == companyId)
+                .Include(s => s.Product)
+                .Include(s => s.Distributor)
+                .Select(s => new ShipmentViewModel
+                {
+                    Id = s.Id,
+                    ProductName = s.Product.Name,
+                    Destination = s.Destination,
+                    Status = s.Status,
+                    CurrentLocation = $"{s.CurrentLocationLat}, {s.CurrentLocationLng}",
+                    LocationLat = s.CurrentLocationLat,
+                    LocationLng = s.CurrentLocationLng,
+                    DistributorName = s.Distributor != null ? s.Distributor.UserName : "Not Assigned"
+                })
+                .ToListAsync();
+
+            return View(shipments);
+        }
+
 
         [HttpGet]
         public IActionResult AddProduct()
@@ -104,7 +306,7 @@ namespace Pharmaflow7.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "company")]
-        public async Task<IActionResult> AddProduct(Product model)
+        public async Task<IActionResult> AddProduct([FromBody] Product model)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null || user.RoleType.ToLower() != "company")
@@ -114,6 +316,10 @@ namespace Pharmaflow7.Controllers
 
             Console.WriteLine($"Received data - Name: {model.Name}, Description: {model.Description}, ProductionDate: {model.ProductionDate}, ExpirationDate: {model.ExpirationDate}");
 
+            // تجاهل أخطاء CompanyId وCompany في ModelState
+            ModelState.Remove("CompanyId");
+            ModelState.Remove("Company");
+
             if (!ModelState.IsValid)
             {
                 Console.WriteLine("ModelState is invalid:");
@@ -121,7 +327,7 @@ namespace Pharmaflow7.Controllers
                 {
                     Console.WriteLine($"Field: {error.Key}, Error: {error.Value.Errors.First().ErrorMessage}");
                 }
-                return BadRequest(ModelState); // أعد تفعيل هذا السطر
+                return BadRequest(ModelState);
             }
 
             var product = new Product
@@ -130,7 +336,7 @@ namespace Pharmaflow7.Controllers
                 ProductionDate = model.ProductionDate,
                 ExpirationDate = model.ExpirationDate,
                 Description = model.Description ?? string.Empty,
-                CompanyId = user.Id
+                CompanyId = user.Id // تعيين يدوي
             };
 
             _context.Products.Add(product);
@@ -138,6 +344,9 @@ namespace Pharmaflow7.Controllers
 
             return Json(new { productId = product.Id });
         }
+
+
+
         [HttpGet]
         public async Task<IActionResult> Reports()
         {
@@ -155,9 +364,6 @@ namespace Pharmaflow7.Controllers
 
             return View(salesData);
         }
-        public IActionResult tracking()
-        {
-            return View();
-        }
+     
     }
 }
