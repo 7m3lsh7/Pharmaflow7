@@ -16,9 +16,11 @@ namespace Pharmaflow7.Models
         [Required]
         public string CompanyId { get; set; }
         public string DistributorId { get; set; }
-        public double CurrentLocationLat { get; set; }
-        public double CurrentLocationLng { get; set; }
+        public int? StoreId { get; set; }
+    
         public virtual Product Product { get; set; }
         public virtual ApplicationUser Distributor { get; set; }
+        public bool? IsAcceptedByDistributor { get; set; }
+        public Store Store { get; set; }
     }
 }

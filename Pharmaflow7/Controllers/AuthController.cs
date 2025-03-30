@@ -196,7 +196,7 @@ namespace Pharmaflow7.Controllers
                     {
                         "consumer" => "ConsumerDashboard",
                         "company" => "CompanyDashboard",
-                        "distributor" => "DistributorDashboard",
+                        "distributor" => "dashboard",
                         _ => "Index"
                     }, roleTypeLower switch
                     {

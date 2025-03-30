@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class one : Migration
+    public partial class ss : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -242,6 +242,62 @@ namespace Pharmaflow7.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Stores",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    DistributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StoreName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Latitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
+                    Longitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Stores", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Stores_AspNetUsers_DistributorId",
+                        column: x => x.DistributorId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Issues",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProductId = table.Column<int>(type: "int", nullable: false),
+                    IssueType = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ReportedById = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ReportedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Issues", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Issues_AspNetUsers_CompanyId",
+                        column: x => x.CompanyId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Issues_AspNetUsers_ReportedById",
+                        column: x => x.ReportedById,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Issues_Products_ProductId",
+                        column: x => x.ProductId,
+                        principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Shipments",
                 columns: table => new
                 {
@@ -253,8 +309,10 @@ namespace Pharmaflow7.Migrations
                     CreatedDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DistributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    StoreId = table.Column<int>(type: "int", nullable: true),
                     CurrentLocationLat = table.Column<double>(type: "float", nullable: false),
-                    CurrentLocationLng = table.Column<double>(type: "float", nullable: false)
+                    CurrentLocationLng = table.Column<double>(type: "float", nullable: false),
+                    IsAcceptedByDistributor = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -277,6 +335,11 @@ namespace Pharmaflow7.Migrations
                         principalTable: "Products",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Shipments_Stores_StoreId",
+                        column: x => x.StoreId,
+                        principalTable: "Stores",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -319,6 +382,21 @@ namespace Pharmaflow7.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Issues_CompanyId",
+                table: "Issues",
+                column: "CompanyId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Issues_ProductId",
+                table: "Issues",
+                column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Issues_ReportedById",
+                table: "Issues",
+                column: "ReportedById");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Products_CompanyId",
                 table: "Products",
                 column: "CompanyId");
@@ -337,6 +415,16 @@ namespace Pharmaflow7.Migrations
                 name: "IX_Shipments_ProductId",
                 table: "Shipments",
                 column: "ProductId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shipments_StoreId",
+                table: "Shipments",
+                column: "StoreId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stores_DistributorId",
+                table: "Stores",
+                column: "DistributorId");
         }
 
         /// <inheritdoc />
@@ -361,6 +449,9 @@ namespace Pharmaflow7.Migrations
                 name: "dashboardViewModels");
 
             migrationBuilder.DropTable(
+                name: "Issues");
+
+            migrationBuilder.DropTable(
                 name: "loginViewModels");
 
             migrationBuilder.DropTable(
@@ -374,6 +465,9 @@ namespace Pharmaflow7.Migrations
 
             migrationBuilder.DropTable(
                 name: "Products");
+
+            migrationBuilder.DropTable(
+                name: "Stores");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");

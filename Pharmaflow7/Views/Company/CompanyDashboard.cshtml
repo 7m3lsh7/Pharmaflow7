@@ -23,7 +23,7 @@
 
         <!-- Overview Cards -->
         <div class="row mb-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card p-4 text-center">
                     <div class="card-body">
                         <h5 class="card-title">Total Products</h5>
@@ -32,24 +32,37 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+             <div class="col-md-3">
                 <div class="card p-4 text-center">
                     <div class="card-body">
                         <h5 class="card-title">Active Shipments</h5>
                         <p class="card-text">@Model.ActiveShipments</p>
-                        <small class="text-muted">In transit: @(Model.Shipments.Count(s => s.GetType().GetProperty("Status")?.GetValue(s)?.ToString() == "In Transit")) | Delivered: @(Model.Shipments.Count(s => s.GetType().GetProperty("Status")?.GetValue(s)?.ToString() == "Delivered"))</small>
+                        <small class="text-muted">
+                            Pending: @(Model.Shipments.Count(s => s.GetType().GetProperty("Status")?.GetValue(s)?.ToString() == "Pending")) | 
+                            In Transit: @(Model.Shipments.Count(s => s.GetType().GetProperty("Status")?.GetValue(s)?.ToString() == "In Transit"))
+                        </small>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <div class="card p-4 text-center">
                     <div class="card-body">
-                        <h5 class="card-title">Performance Score</h5>
-                        <p class="card-text">@Model.PerformanceScore%</p>
-                        <small class="text-muted">Based on delivery & sales</small>
+                        <h5 class="card-title">Delivered Shipments</h5>
+                        <p class="card-text">@Model.DeliveredShipments</p>
+                        <small class="text-muted">Completed shipments</small>
                     </div>
                 </div>
             </div>
+         <div class="col-md-3">
+            <div class="card p-4 text-center">
+                <div class="card-body">
+                    <h5 class="card-title">Performance Score</h5>
+                    <p class="card-text">@Model.PerformanceScore%</p>
+                   
+                    <small class="text-muted">Based on delivery & sales</small>
+                </div>
+            </div>
+        </div>
         </div>
 
         <!-- Active Shipments Table -->
@@ -95,7 +108,7 @@
                                 }
                             </td>
                             <td>
-                                <a href="@Url.Action("TrackShipment", "Company", new { id = id })" class="btn btn-primary btn-sm">
+                                <a href="@Url.Action("TrackShipments", "Company", new { id = id })" class="btn btn-primary btn-sm">
                                     @(status == "Delivered" ? "View" : "Track")
                                 </a>
                             </td>
