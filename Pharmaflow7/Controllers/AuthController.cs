@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Pharmaflow7.Models;
 using System;
 using Microsoft.AspNetCore.Authorization;
-//fg
+
 namespace Pharmaflow7.Controllers
 {
     public class AuthController : Controller
@@ -20,7 +20,7 @@ namespace Pharmaflow7.Controllers
             _roleManager = roleManager;
         }
 
-        // عرض صفحة التسجيل
+        // عرض صفحة التسجيلnm
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
