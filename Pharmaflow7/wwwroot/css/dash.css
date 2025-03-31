@@ -65,6 +65,18 @@ body {
         transform: scale(1.05);
     }
 
+.btn-success {
+    background: linear-gradient(45deg, #198754, #05c76d);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.btn-success:hover {
+        background: linear-gradient(45deg, #198754, #05c76d);
+        transform: scale(1.05);
+    }
 .chart-container {
     position: relative;
     height: 300px;

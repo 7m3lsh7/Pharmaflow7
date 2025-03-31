@@ -10,8 +10,10 @@ using Pharmaflow7.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 // إعداد قاعدة البيانات
+var encryptedConnection = builder.Configuration.GetConnectionString("DefaultConnection");
+// هنا بتشفري الـ string باستخدام Data Protection API
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Defaultconnection")));
+    options.UseSqlServer(encryptedConnection));
 
 // إعداد Identity مع مصادقة الكوكيز
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -35,6 +37,12 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Auth/AccessDenied";    
     options.Cookie.HttpOnly = true;
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+});
+
+builder.Services.AddLogging(logging =>
+{
+    logging.AddConsole();
+    logging.AddDebug();
 });
 
 builder.Services.AddControllersWithViews();

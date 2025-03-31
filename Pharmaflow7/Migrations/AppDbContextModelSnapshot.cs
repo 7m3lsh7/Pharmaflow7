@@ -270,6 +270,47 @@ namespace Pharmaflow7.Migrations
                     b.ToTable("dashboardViewModels");
                 });
 
+            modelBuilder.Entity("Pharmaflow7.Models.Issue", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("CompanyId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("IssueType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReportedById")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("ReportedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CompanyId");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("ReportedById");
+
+                    b.ToTable("Issues");
+                });
+
             modelBuilder.Entity("Pharmaflow7.Models.LoginViewModel", b =>
                 {
                     b.Property<int>("Id")
@@ -342,12 +383,6 @@ namespace Pharmaflow7.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<double>("CurrentLocationLat")
-                        .HasColumnType("float");
-
-                    b.Property<double>("CurrentLocationLng")
-                        .HasColumnType("float");
-
                     b.Property<string>("Destination")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -356,12 +391,18 @@ namespace Pharmaflow7.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<bool?>("IsAcceptedByDistributor")
+                        .HasColumnType("bit");
+
                     b.Property<int>("ProductId")
                         .HasColumnType("int");
 
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("StoreId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -371,7 +412,37 @@ namespace Pharmaflow7.Migrations
 
                     b.HasIndex("ProductId");
 
+                    b.HasIndex("StoreId");
+
                     b.ToTable("Shipments");
+                });
+
+            modelBuilder.Entity("Pharmaflow7.Models.Store", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("DistributorId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("StoreAddress")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("StoreName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("DistributorId");
+
+                    b.ToTable("Stores");
                 });
 
             modelBuilder.Entity("Pharmaflow7.Models.UserRegistrationModel", b =>
@@ -483,6 +554,33 @@ namespace Pharmaflow7.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Pharmaflow7.Models.Issue", b =>
+                {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
+                        .WithMany()
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("Pharmaflow7.Models.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "ReportedBy")
+                        .WithMany()
+                        .HasForeignKey("ReportedById")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Company");
+
+                    b.Navigation("Product");
+
+                    b.Navigation("ReportedBy");
+                });
+
             modelBuilder.Entity("Pharmaflow7.Models.Product", b =>
                 {
                     b.HasOne("Pharmaflow7.Models.ApplicationUser", "Company")
@@ -514,9 +612,26 @@ namespace Pharmaflow7.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Pharmaflow7.Models.Store", "Store")
+                        .WithMany()
+                        .HasForeignKey("StoreId");
+
                     b.Navigation("Distributor");
 
                     b.Navigation("Product");
+
+                    b.Navigation("Store");
+                });
+
+            modelBuilder.Entity("Pharmaflow7.Models.Store", b =>
+                {
+                    b.HasOne("Pharmaflow7.Models.ApplicationUser", "Distributor")
+                        .WithMany()
+                        .HasForeignKey("DistributorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Distributor");
                 });
 #pragma warning restore 612, 618
         }

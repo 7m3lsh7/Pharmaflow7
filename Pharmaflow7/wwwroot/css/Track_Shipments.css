@@ -1,101 +1,105 @@
-﻿
-
-.logo {
-    font-size: 20px;
-    font-weight: bold;
-}
-
-.navbar ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    gap: 20px;
-}
-
-    .navbar ul li a {
-        color: white;
-        text-decoration: none;
-        font-size: 16px;
-    }
-
-        .navbar ul li a:hover {
-            text-decoration: underline;
-        }
-
+﻿/* تنسيق عام للصفحة */
 .main-content {
-    display: flex;
-    justify-content: center;
-    align-items: center;
     padding: 20px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
 }
 
 .container {
-    background-color: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 400px;
-    text-align: center;
-    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
 }
 
 h1 {
+    font-size: 2rem;
     color: #333;
     margin-bottom: 20px;
+    text-align: center;
 }
 
-.tracking-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-input {
-    padding: 10px;
-    font-size: 16px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    text-align: left;
-}
-
-button {
-    padding: 10px;
-    font-size: 16px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-    button:hover {
-        background-color: #0056b3;
-    }
-
+/* تنسيق الجدول */
 .result {
     margin-top: 20px;
-    padding: 10px;
-    border-radius: 5px;
-    display: none;
 }
 
-    .result.show {
-        display: block;
+.shipment-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+    .shipment-table th,
+    .shipment-table td {
+        padding: 12px;
+        border: 1px solid #ddd;
+        text-align: left;
     }
 
-.success {
-    background-color: #d4edda;
-    color: #155724;
+    .shipment-table th {
+        background-color: #f4f4f4;
+        font-weight: bold;
+        color: #555;
+    }
+
+    .shipment-table td {
+        color: #333;
+    }
+
+    .shipment-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+
+    .shipment-table tr:hover {
+        background-color: #f1f1f1;
+    }
+
+/* تنسيق الأزرار */
+.accept-btn {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-right: 5px;
+    transition: background-color 0.3s;
 }
 
-.error {
-    background-color: #f8d7da;
-    color: #721c24;
+    .accept-btn:hover {
+        background-color: #218838;
+    }
+
+.reject-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s;
 }
 
+    .reject-btn:hover {
+        background-color: #c82333;
+    }
+
+/* تنسيق النصوص */
+.text-success {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+/* تنسيق الخريطة */
 .map {
     height: 400px;
     width: 100%;
     margin-top: 20px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
 }

@@ -17,10 +17,36 @@ namespace Pharmaflow7.Data
         public DbSet<DashboardViewModel> dashboardViewModels { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Shipment> Shipments { get; set; }
+        public DbSet<Issue> Issues { get; set; }
+        public DbSet<Store> Stores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+            // تكوين علاقة Shipment مع Store
+            modelBuilder.Entity<Shipment>()
+                .HasOne(s => s.Store)
+                .WithMany()
+                .HasForeignKey(s => s.StoreId);
+
+            // تكوين علاقات Issue
+            modelBuilder.Entity<Issue>()
+                .HasOne(i => i.Company)
+                .WithMany()
+                .HasForeignKey(i => i.CompanyId)
+                .OnDelete(DeleteBehavior.NoAction); // منع الـ cascade delete
+
+            modelBuilder.Entity<Issue>()
+                .HasOne(i => i.ReportedBy)
+                .WithMany()
+                .HasForeignKey(i => i.ReportedById)
+                .OnDelete(DeleteBehavior.NoAction); // منع الـ cascade delete
+
+            modelBuilder.Entity<Issue>()
+                .HasOne(i => i.Product)
+                .WithMany()
+                .HasForeignKey(i => i.ProductId);
 
             // العلاقة بين Product و ApplicationUser (الشركة المنتجة)
             modelBuilder.Entity<Product>()

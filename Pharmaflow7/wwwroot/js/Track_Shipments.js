@@ -1,80 +1,165 @@
 ﻿let map;
-let polyline;
+let markers = [];
 
-// Initialize the map
 function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 30.0444, lng: 31.2357 }, // Default center (Cairo, Egypt as an example)
-        zoom: 5,
+        center: { lat: 30.0444, lng: 31.2357 },
+        zoom: 6
+    });
+
+    const shipments = JSON.parse(document.querySelector('#shipmentData').textContent);
+    shipments.forEach(shipment => {
+        const marker = new google.maps.Marker({
+            position: { lat: shipment.locationLat, lng: shipment.locationLng },
+            map: map,
+            title: `${shipment.id} - ${shipment.productName}`,
+            icon: shipment.status === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
+                shipment.status === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
+                    shipment.status === 'Rejected' ? 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' :
+                        'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        });
+        markers.push(marker);
+
+        const infoWindow = new google.maps.InfoWindow({
+            content: `<h5>${shipment.id}</h5><p>Product: ${shipment.productName}</p><p>Status: ${shipment.status}</p><p>Location: ${shipment.currentLocation}</p>`
+        });
+        marker.addListener('click', () => {
+            infoWindow.open(map, marker);
+        });
     });
 }
-
-function trackShipment() {
-    const trackingNumber = document.getElementById('trackingNumber').value;
-    const resultDiv = document.getElementById('result');
-
-    // Reset result and map
-    resultDiv.innerHTML = '';
-    resultDiv.className = 'result';
-    if (polyline) {
-        polyline.setMap(null); // Clear previous polyline if exists
-    }
-
-    if (!trackingNumber) {
-        resultDiv.innerHTML = 'Please enter a valid tracking number';
-        resultDiv.classList.add('error', 'show');
+function acceptShipment(shipmentId) {
+    console.log('acceptShipment called with shipmentId:', shipmentId);
+    if (!shipmentId || shipmentId === '0' || shipmentId === 0) {
+        alert('Invalid shipment ID: ' + shipmentId);
         return;
     }
 
-    // Simulate tracking process (can be replaced with a real API later)
-    setTimeout(() => {
-        if (trackingNumber.length === 10 && !isNaN(trackingNumber)) {
-            resultDiv.innerHTML = `
-                <strong>Tracking Number:</strong> ${trackingNumber}<br>
-                <strong>Status:</strong> In Transit<br>
-                <strong>Expected Delivery Date:</strong> March 25, 2025
-            `;
-            resultDiv.classList.add('success', 'show');
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    console.log('Token:', token);
 
-            // Simulate shipment path (replace with real data from an API if available)
-            const shipmentPath = [
-                { lat: 30.0444, lng: 31.2357 }, // Cairo, Egypt (Starting point)
-                { lat: 31.2001, lng: 29.9187 }, // Alexandria, Egypt
-                { lat: 33.3152, lng: 44.3661 }, // Baghdad, Iraq (Destination)
-            ];
-
-            // Draw the path on the map
-            polyline = new google.maps.Polyline({
-                path: shipmentPath,
-                geodesic: true,
-                strokeColor: '#FF0000',
-                strokeOpacity: 1.0,
-                strokeWeight: 2,
-            });
-
-            polyline.setMap(map);
-
-            // Adjust map to fit the path
-            const bounds = new google.maps.LatLngBounds();
-            shipmentPath.forEach(point => bounds.extend(point));
-            map.fitBounds(bounds);
-
-            // Add markers for start and end points
-            new google.maps.Marker({
-                position: shipmentPath[0],
-                map: map,
-                label: 'Start',
-            });
-
-            new google.maps.Marker({
-                position: shipmentPath[shipmentPath.length - 1],
-                map: map,
-                label: 'End',
-            });
-
-        } else {
-            resultDiv.innerHTML = 'Invalid tracking number. Please check the number.';
-            resultDiv.classList.add('error', 'show');
+    // إرسال الـ id في الـ URL كـ query string
+    fetch(`/Distributor/AcceptShipment?id=${shipmentId}`, {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': token
         }
-    }, 1000); // Delay to simulate server response
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(`Request failed: ${response.status} - ${text}`); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                alert(data.message);
+                const row = document.querySelector(`tr[data-shipment-id="${shipmentId}"]`);
+                row.querySelector('td:nth-child(4)').textContent = 'In Transit';
+                row.querySelector('td:last-child').innerHTML = '<span class="text-success">Accepted</span>';
+                updateMarker(shipmentId, 'In Transit');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while accepting the shipment: ' + error.message);
+        });
+}
+
+function rejectShipment(shipmentId) {
+    console.log('rejectShipment called with shipmentId:', shipmentId);
+    if (!shipmentId || shipmentId === '0' || shipmentId === 0) {
+        alert('Invalid shipment ID: ' + shipmentId);
+        return;
+    }
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    console.log('Token:', token);
+
+    // إرسال الـ id في الـ URL كـ query string
+    fetch(`/Distributor/RejectShipment?id=${shipmentId}`, {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': token
+        }
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(`Request failed: ${response.status} - ${text}`); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                alert(data.message);
+                const row = document.querySelector(`tr[data-shipment-id="${shipmentId}"]`);
+                row.querySelector('td:nth-child(4)').textContent = 'Rejected';
+                row.querySelector('td:last-child').innerHTML = '<span class="text-danger">Rejected</span>';
+                updateMarker(shipmentId, 'Rejected');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while rejecting the shipment: ' + error.message);
+        });
+}
+function updateMarker(shipmentId, newStatus) {
+    const marker = markers.find(m => m.title.includes(shipmentId));
+    if (marker) {
+        marker.setIcon(
+            newStatus === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
+                newStatus === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
+                    newStatus === 'Rejected' ? 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' :
+                        'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+        );
+    }
+}
+
+function confirmDelivery(shipmentId) {
+    console.log('confirmDelivery called with shipmentId:', shipmentId);
+    if (!shipmentId || shipmentId === '0' || shipmentId === 0) {
+        alert('Invalid shipment ID: ' + shipmentId);
+        return;
+    }
+
+    const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    console.log('Token:', token);
+
+    fetch(`/Distributor/ConfirmDelivery?id=${ shipmentId }`, {
+        method: 'POST',
+        headers: {
+            'RequestVerificationToken': token
+        }
+    })
+        .then(response => {
+            console.log('Response status:', response.status);
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(`Request failed: ${response.status} - ${text}`); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Response data:', data);
+            if (data.success) {
+                alert(data.message);
+                const row = document.querySelector(`tr[data-shipment-id="${shipmentId}"]`);
+                row.querySelector('td:nth-child(4)').textContent = 'Delivered';
+                row.querySelector('td:last-child').innerHTML = '<span class="text-success">Delivered</span>';
+                updateMarker(shipmentId, 'Delivered');
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while confirming delivery: ' + error.message);
+        });
 }
