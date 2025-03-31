@@ -115,7 +115,7 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Company}/{action=CompanyDashboard}/{id?}");
+    pattern: "{controller=Home_page}/{action=Index}/{id?}");
 
 app.Run();
 

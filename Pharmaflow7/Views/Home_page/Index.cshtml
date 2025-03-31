@@ -1,0 +1,105 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medicine Tracking Platform</title>
+    <link rel="stylesheet" href="~/css/Home_page.css">
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <h1>Ensure Your Safety - Track Your Medicine Easily!</h1>
+        <p>We use Blockchain and QR Code technology to ensure medicine authenticity and transparent distribution.</p>
+        <div id="scanner-container" class="scanner-hidden">
+            <h2>Scan Your Medicine QR Code</h2>
+            <video id="video" autoplay></video>
+            <canvas id="canvas"></canvas>
+            <p id="result">Scanning for QR Code...</p>
+            <button id="closeBtn">Close Scanner</button>
+        </div>
+        <button id="scanBtn">Scan QR Code Now</button>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <h2>Why Choose Our Platform?</h2>
+        <div class="features-container">
+            <div class="feature-item">
+                <img src="~/image/instant verification.jpeg" />
+                <h3>Instant Verification</h3>
+                <p>Scan the code and verify medicine authenticity in seconds.</p>
+            </div>
+            <div class="feature-item">
+                <img src="~/image/shipment tracking.png" />
+                <h3>Shipment Tracking</h3>
+                <p>Follow your medicine’s journey from factory to your hands.</p>
+            </div>
+            <div class="feature-item">
+                <img src="~/image/blockchain security.png" />
+                <h3>Blockchain Security</h3>
+                <p>Your data is protected with advanced Blockchain technology.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works">
+        <h2>How It Works</h2>
+        <div class="steps-container">
+            <div class="step">
+                <img src="~/image/sign up.jpg" alt="Step 1" />
+                <h3>Sign Up</h3>
+                <p>Create your account in just a few clicks.</p>
+            </div>
+            <div class="step">
+                <img src="~/image/qr.jpg" alt="Step 2" />
+                <h3>Scan QR</h3>
+                <p>Use your phone to scan the medicine’s QR code.</p>
+            </div>
+            <div class="step">
+                <img src="~/image/get details.jpg" alt="Step 3" />
+                <h3>Get Details</h3>
+                <p>View production, expiry, and tracking info instantly.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Statistics Section -->
+    <section class="statistics">
+        <h2>Our Impact</h2>
+        <div class="stats-container">
+            <div class="stat-item">
+                <h3>10,000+</h3>
+                <p>Medicines Verified</p>
+            </div>
+            <div class="stat-item">
+                <h3>50+</h3>
+                <p>Partner Companies</p>
+            </div>
+            <div class="stat-item">
+                <h3>99%</h3>
+                <p>Tracking Accuracy</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <section class="testimonials">
+        <h2>What Our Users Say</h2>
+        <div class="testimonials-container">
+            <div class="testimonial-item">
+                <p>"This platform gave me peace of mind knowing my medicine is genuine!"</p>
+                <h4>John Doe, Consumer</h4>
+            </div>
+            <div class="testimonial-item">
+                <p>"Tracking shipments has never been easier. A game-changer for our business."</p>
+                <h4>Pharma Inc., Partner</h4>
+            </div>
+        </div>
+    </section>
+
+    <script src="~/js/Home_page.js"></script>
+</body>
+</html>
