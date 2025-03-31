@@ -6,6 +6,7 @@ using System;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
 
+//fg
 namespace Pharmaflow7.Controllers
 {
     public class AuthController : Controller
@@ -327,4 +328,7 @@ namespace Pharmaflow7.Controllers
             return View();
         }
     }
+}
+
+   
 }
