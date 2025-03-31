@@ -15,17 +15,24 @@
     <div class="container mt-4">
         <h1 class="mb-4">Create New Shipment</h1>
 
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @TempData["Error"]
+            </div>
+        }
+
         <form asp-action="CreateShipment" method="post" id="createShipmentForm">
             <div class="mb-3">
                 <label asp-for="ProductId" class="form-label">Product</label>
-                <select asp-for="ProductId" class="form-control" asp-items="@(new SelectList(Model.Products, "Id", "Name"))">
+                <select asp-for="ProductId" class="form-control" id="ProductId" asp-items="@(new SelectList(Model.Products, "Id", "Name"))">
                     <option value="">Select a product</option>
                 </select>
                 <span asp-validation-for="ProductId" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label asp-for="Destination" class="form-label">Destination</label>
-                <input asp-for="Destination" class="form-control" />
+                <input asp-for="Destination" class="form-control" id="Destination" />
                 <span asp-validation-for="Destination" class="text-danger"></span>
             </div>
             <div class="mb-3">
@@ -37,7 +44,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="StoreId" class="form-label">Store</label>
-                <select asp-for="StoreId" class="form-control" id="storeSelect">
+                <select asp-for="StoreId" class="form-control" id="storeSelect" name="StoreId">
                     <option value="">Select a distributor first</option>
                 </select>
                 <span asp-validation-for="StoreId" class="text-danger"></span>
@@ -51,6 +58,7 @@
         const distributorSelect = document.getElementById("distributorSelect");
         const storeSelect = document.getElementById("storeSelect");
         const form = document.getElementById("createShipmentForm");
+        let isFetchingStores = false;
 
         distributorSelect.addEventListener("change", function () {
             const distributorId = this.value;
@@ -58,6 +66,7 @@
             if (distributorId) {
                 const url = `${window.location.origin}/Company/GetStores?distributorId=${distributorId}`;
                 console.log("Fetching stores from:", url);
+                isFetchingStores = true;
                 fetch(url, {
                     method: 'GET',
                     headers: {
@@ -78,10 +87,12 @@
                         option.text = store.storeName;
                         storeSelect.appendChild(option);
                     });
+                    isFetchingStores = false;
                 })
                 .catch(error => {
                     console.error('Error fetching stores:', error);
                     storeSelect.innerHTML = '<option value="">Error loading stores</option>';
+                    isFetchingStores = false;
                 });
             }
         });
@@ -98,7 +109,12 @@
                 return;
             }
 
-            // لو DistributorId مختار، لازم StoreId يكون مختار كمان
+            if (isFetchingStores) {
+                e.preventDefault();
+                alert("Please wait until stores are loaded.");
+                return;
+            }
+
             if (distributorId && !storeId) {
                 e.preventDefault();
                 alert("Please select a store for the selected distributor.");

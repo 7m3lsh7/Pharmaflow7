@@ -1,24 +1,4 @@
-﻿let currentStep = 1;
-
-function nextStep(step) {
-    document.getElementById(`step${currentStep}`).classList.remove('active');
-    document.getElementById(`step${step}`).classList.add('active');
-    currentStep = step;
-
-    const progress = (step / 2) * 100;
-    document.querySelector('.progress-bar').style.width = `${progress}%`;
-}
-
-function prevStep(step) {
-    document.getElementById(`step${currentStep}`).classList.remove('active');
-    document.getElementById(`step${step}`).classList.add('active');
-    currentStep = step;
-
-    const progress = (step / 2) * 100;
-    document.querySelector('.progress-bar').style.width = `${progress}%`;
-}
-
-function adjustFields() {
+﻿function adjustFields() {
     const userType = document.getElementById('userType').value;
     document.getElementById('consumerFields').style.display = userType === 'consumer' ? 'block' : 'none';
     document.getElementById('companyFields').style.display = userType === 'company' ? 'block' : 'none';
@@ -71,43 +51,28 @@ function validateStep1() {
     }
 }
 
-function validateStep2() {
-    const userType = document.getElementById('userType').value;
-    let isValid = true;
+function nextStep(step) {
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    document.getElementById(`step${step}`).classList.add('active');
+    currentStep = step;
 
-    if (userType === 'distributor') {
-        const distributorName = document.getElementById('distributorName').value.trim();
-        const warehouseAddress = document.getElementById('warehouseAddress').value.trim();
-        const contactNumber = document.getElementById('distributorContact').value.trim();
-
-        if (!distributorName) {
-            document.getElementById('distributorName').classList.add('is-invalid');
-            isValid = false;
-        } else {
-            document.getElementById('distributorName').classList.remove('is-invalid');
-        }
-        if (!warehouseAddress) {
-            document.getElementById('warehouseAddress').classList.add('is-invalid');
-            isValid = false;
-        } else {
-            document.getElementById('warehouseAddress').classList.remove('is-invalid');
-        }
-        if (!contactNumber) {
-            document.getElementById('distributorContact').classList.add('is-invalid');
-            isValid = false;
-        } else {
-            document.getElementById('distributorContact').classList.remove('is-invalid');
-        }
-    }
-
-    if (isValid) {
-        document.getElementById('signupForm').submit();
-    }
+    const progress = (step / 2) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
 }
+
+function prevStep(step) {
+    document.getElementById(`step${currentStep}`).classList.remove('active');
+    document.getElementById(`step${step}`).classList.add('active');
+    currentStep = step;
+
+    const progress = (step / 2) * 100;
+    document.querySelector('.progress-bar').style.width = `${progress}%`;
+}
+
 function loginWithGoogle() {
-    alert('Logging in with Google...');
+    window.location.href = '/Auth/ExternalLogin?provider=Google';
 }
 
 function loginWithFacebook() {
-    alert('Logging in with Facebook...');
+    window.location.href = '/Auth/ExternalLogin?provider=Facebook';
 }

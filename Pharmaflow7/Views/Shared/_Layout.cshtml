@@ -4,53 +4,88 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Pharmaflow7</title>
-    <script type="importmap"></script>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Pharmaflow7.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="~/css/dash.css" asp-append-version="true" />
-   
-
-    <!-- مكتبة Leaflet -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm  d-flex justify-content-center navbar-toggleable-sm navbar-light  border-bottom box-shadow mb-3">
+        <nav class="navbar navbar-expand-sm d-flex justify-content-center navbar-toggleable-sm navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
                 <a class="navbar-brand text-light" asp-area="" asp-controller="Home" asp-action="Index">PharmaFlow</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex ">
+                <div class="navbar-collapse collapse d-sm-inline-flex">
                     <ul class="navbar-nav flex-grow-1 justify-content-center">
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="CompanyDashboard">Dashboard</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="AddProduct">Add Product</a>
-                        </li>                  
-                        <li class="nav-item">  
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="ManageProducts"> Manage Products</a>
-                        </li>                  
-                        <li class="nav-item">   
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="TrackShipments">Track Shipments</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="Reports">Reports</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="CreateShipment">CreateShipment</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var userRole = ViewData["RoleType"]?.ToString();
+                          
+                            if (userRole == "company")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="CompanyDashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="AddProduct">Add Product</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="ManageProducts">Manage Products</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="TrackShipments">Track Shipments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="Reports">Reports</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Company" asp-action="CreateShipment">Create Shipment</a>
+                                </li>
+                            }
+                            else if (userRole == "distributor")
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="dashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="TrackShipment">Track Shipments</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="AddStore">Add Store</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="ManageStores">Manage Stores</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="report">Report</a>
+                                </li>
+                            }
+                            else
+                            {
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                                </li>
+                            }
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
                 <div class="m-2 d-flex align-items-center">
-                    <img src="..." alt="eva" class="img">
-                    <p class="username m-2">EVA</p>
+                    <p class="username m-2">@(ViewData["UserName"] ?? "Guest")</p>
                     @if (User.Identity.IsAuthenticated)
                     {
                         <form asp-controller="Auth" asp-action="Logout" method="post" class="m-2">
@@ -61,7 +96,6 @@
                     }
                 </div>
             </div>
-          
         </nav>
     </header>
     <div>
@@ -70,11 +104,9 @@
         </main>
     </div>
 
-   
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
-   
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

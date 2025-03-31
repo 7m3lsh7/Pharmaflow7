@@ -11,13 +11,13 @@ using System.Threading.Tasks;
 namespace Pharmaflow7.Controllers
 {
     [Authorize(Roles = "distributor")]
-    public class DistributorController : Controller
+    public class DistributorController : BaseController
     {
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<DistributorController> _logger;
 
-        public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<DistributorController> logger)
+        public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<DistributorController> logger)  : base(userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -35,7 +35,7 @@ namespace Pharmaflow7.Controllers
             try
             {
                 var user = await _userManager.GetUserAsync(User);
-                if (user == null || user.RoleType != "distributor")
+                 if (user == null || user.RoleType != "distributor")
                 {
                     _logger.LogWarning("Unauthorized access attempt to TrackShipment.");
                     return RedirectToAction("Login", "Auth");

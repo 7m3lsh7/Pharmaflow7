@@ -12,6 +12,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="~/css/dash.css" asp-append-version="true">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <style>
         #map {
             height: 400px; /* ارتفاع الخريطة */
@@ -82,102 +84,118 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB_RHVAafuKLFLunU2rK7gmo4DJYJcpKxg&callback=initMap&libraries=geocoder"></script>
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script>
         let map;
         let markers = [];
-        let geocoder;
 
-        // تهيئة الخريطة
+        // تهيئة الخريطة باستخدام Leaflet وOpenStreetMap
         function initMap() {
-            map = new google.maps.Map(document.getElementById('map'), {
-                center: { lat: 30.0444, lng: 31.2357 }, // مركز افتراضي (القاهرة)
-                zoom: 6
-            });
-            geocoder = new google.maps.Geocoder();
+            map = L.map('map').setView([30.0444, 31.2357], 6); // مركز افتراضي (القاهرة)
 
-            // إضافة علامات لجميع الشحنات من النموذج
+            // إضافة طبقة OpenStreetMap
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            }).addTo(map);
+
+            // إضافة علامات لجميع الشحنات
             const shipments = @Html.Raw(Json.Serialize(Model));
             shipments.forEach(shipment => {
                 if (shipment.storeAddress) {
-                    geocoder.geocode({ address: shipment.storeAddress }, (results, status) => {
-                        if (status === "OK" && results[0]) {
-                            const location = results[0].geometry.location;
-                            const marker = new google.maps.Marker({
-                                position: location,
-                                map: map,
-                                title: `${shipment.id} - ${shipment.productName}`,
-                                icon: shipment.status === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
-                                      shipment.status === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
-                                      'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-                            });
-                            markers.push(marker);
-
-                            // نافذة معلومات لكل علامة
-                            const infoWindow = new google.maps.InfoWindow({
-                                content: `<h5>${shipment.id}</h5><p>Product: ${shipment.productName}</p><p>Status: ${shipment.status}</p><p>Address: ${shipment.storeAddress}</p>`
-                            });
-                            marker.addListener('click', () => {
-                                infoWindow.open(map, marker);
-                            });
-                        } else {
-                            console.error(`Geocode failed for ${shipment.storeAddress}: ${status}`);
-                        }
-                    });
+                    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(shipment.storeAddress)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data && data.length > 0) {
+                                const lat = parseFloat(data[0].lat);
+                                const lon = parseFloat(data[0].lon);
+                                const marker = L.marker([lat, lon], {
+                                    icon: L.icon({
+                                        iconUrl: shipment.status === 'Delivered' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png' :
+                                                 shipment.status === 'In Transit' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png' :
+                                                 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                                        shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                                        iconSize: [25, 41],
+                                        iconAnchor: [12, 41],
+                                        popupAnchor: [1, -34],
+                                        shadowSize: [41, 41]
+                                    })
+                                }).addTo(map);
+                                marker.bindPopup(`<h5>${shipment.id}</h5><p>Product: ${shipment.productName}</p><p>Status: ${shipment.status}</p><p>Address: ${shipment.storeAddress}</p>`);
+                                markers.push({ id: shipment.id, marker: marker });
+                            } else {
+                                console.error(`Geocode failed for ${shipment.storeAddress}`);
+                            }
+                        })
+                        .catch(error => console.error('Error geocoding:', error));
                 }
             });
         }
 
         // توسيط الخريطة على شحنة محددة
         function showOnMap(address, shipmentId) {
-            geocoder.geocode({ address: address }, (results, status) => {
-                if (status === "OK" && results[0]) {
-                    const location = results[0].geometry.location;
-                    map.setCenter(location);
-                    map.setZoom(12);
-                    markers.forEach(marker => {
-                        if (marker.title.includes(shipmentId)) {
-                            new google.maps.InfoWindow({
-                                content: marker.title
-                            }).open(map, marker);
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.length > 0) {
+                        const lat = parseFloat(data[0].lat);
+                        const lon = parseFloat(data[0].lon);
+                        map.setView([lat, lon], 12);
+                        const marker = markers.find(m => m.id == shipmentId);
+                        if (marker) {
+                            marker.marker.openPopup();
                         }
-                    });
-                } else {
-                    alert("Could not find location on map: " + address);
-                }
-            });
+                    } else {
+                        alert("Could not find location on map: " + address);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error geocoding:', error);
+                    alert("Error finding location: " + address);
+                });
         }
 
-        // فتح تطبيق Google Maps للتنقل إلى موقع الشحنة
+        // فتح تطبيق خرائط للتنقل إلى موقع الشحنة
         function navigateToShipment(address) {
             if (navigator.geolocation) {
                 navigator.geolocation.getCurrentPosition(
                     (position) => {
                         const userLat = position.coords.latitude;
                         const userLng = position.coords.longitude;
-                        geocoder.geocode({ address: address }, (results, status) => {
-                            if (status === "OK" && results[0]) {
-                                const destLat = results[0].geometry.location.lat();
-                                const destLng = results[0].geometry.location.lng();
-                                const url = `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${destLat},${destLng}&travelmode=driving`;
+                        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data && data.length > 0) {
+                                    const destLat = data[0].lat;
+                                    const destLng = data[0].lon;
+                                    const url = `https://www.openstreetmap.org/directions?from=${userLat},${userLng}&to=${destLat},${destLng}`;
+                                    window.open(url, '_blank');
+                                } else {
+                                    const url = `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
+                                    window.open(url, '_blank');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error geocoding:', error);
+                                const url = `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
                                 window.open(url, '_blank');
-                            } else {
-                                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
-                                window.open(url, '_blank');
-                            }
-                        });
+                            });
                     },
                     (error) => {
                         console.error('Error getting user location:', error);
-                        const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+                        const url = `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
                         window.open(url, '_blank');
                     }
                 );
             } else {
-                const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+                const url = `https://www.openstreetmap.org/search?query=${encodeURIComponent(address)}`;
                 window.open(url, '_blank');
             }
         }
+
+        // تشغيل الخريطة عند تحميل الصفحة
+        window.onload = initMap;
     </script>
 </body>
 </html>

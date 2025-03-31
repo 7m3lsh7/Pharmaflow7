@@ -2,32 +2,69 @@
 let markers = [];
 
 function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat: 30.0444, lng: 31.2357 },
-        zoom: 6
-    });
+    // التأكد من وجود الـ map div
+    const mapDiv = document.getElementById('map');
+    if (!mapDiv) {
+        console.error('Map container not found!');
+        return;
+    }
 
-    const shipments = JSON.parse(document.querySelector('#shipmentData').textContent);
+    // تهيئة الخريطة
+    map = L.map('map').setView([30.0444, 31.2357], 6); // مركز افتراضي (القاهرة)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // تحميل الشحنات من shipmentData
+    const shipmentData = document.querySelector('#shipmentData');
+    if (!shipmentData) {
+        console.error('Shipment data not found!');
+        return;
+    }
+    const shipments = JSON.parse(shipmentData.textContent);
+    console.log('Shipments loaded:', shipments);
+
     shipments.forEach(shipment => {
-        const marker = new google.maps.Marker({
-            position: { lat: shipment.locationLat, lng: shipment.locationLng },
-            map: map,
-            title: `${shipment.id} - ${shipment.productName}`,
-            icon: shipment.status === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
-                shipment.status === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
-                    shipment.status === 'Rejected' ? 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' :
-                        'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-        });
-        markers.push(marker);
-
-        const infoWindow = new google.maps.InfoWindow({
-            content: `<h5>${shipment.id}</h5><p>Product: ${shipment.productName}</p><p>Status: ${shipment.status}</p><p>Location: ${shipment.currentLocation}</p>`
-        });
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
+        if (shipment.locationLat && shipment.locationLng) {
+            const marker = L.marker([shipment.locationLat, shipment.locationLng], {
+                icon: L.icon({
+                    iconUrl: shipment.status === 'Delivered' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png' :
+                        shipment.status === 'In Transit' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png' :
+                            shipment.status === 'Rejected' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png' :
+                                'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+                    shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                    shadowSize: [41, 41]
+                })
+            }).addTo(map);
+            marker.bindPopup(`<h5>${shipment.id}</h5><p>Product: ${shipment.productName}</p><p>Status: ${shipment.status}</p><p>Location: ${shipment.currentLocation}</p>`);
+            markers.push(marker);
+        } else {
+            console.warn(`No location data for shipment ${shipment.id}`);
+        }
     });
 }
+
+function updateMarker(shipmentId, newStatus) {
+    const marker = markers.find(m => m._popup._content.includes(shipmentId));
+    if (marker) {
+        marker.setIcon(L.icon({
+            iconUrl: newStatus === 'Delivered' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png' :
+                newStatus === 'In Transit' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-yellow.png' :
+                    newStatus === 'Rejected' ? 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png' :
+                        'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png',
+            shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-shadow.png',
+            iconSize: [25, 41],
+            iconAnchor: [12, 41],
+            popupAnchor: [1, -34],
+            shadowSize: [41, 41]
+        }));
+    }
+}
+
 function acceptShipment(shipmentId) {
     console.log('acceptShipment called with shipmentId:', shipmentId);
     if (!shipmentId || shipmentId === '0' || shipmentId === 0) {
@@ -38,7 +75,6 @@ function acceptShipment(shipmentId) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
     console.log('Token:', token);
 
-    // إرسال الـ id في الـ URL كـ query string
     fetch(`/Distributor/AcceptShipment?id=${shipmentId}`, {
         method: 'POST',
         headers: {
@@ -80,7 +116,6 @@ function rejectShipment(shipmentId) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
     console.log('Token:', token);
 
-    // إرسال الـ id في الـ URL كـ query string
     fetch(`/Distributor/RejectShipment?id=${shipmentId}`, {
         method: 'POST',
         headers: {
@@ -111,17 +146,6 @@ function rejectShipment(shipmentId) {
             alert('An error occurred while rejecting the shipment: ' + error.message);
         });
 }
-function updateMarker(shipmentId, newStatus) {
-    const marker = markers.find(m => m.title.includes(shipmentId));
-    if (marker) {
-        marker.setIcon(
-            newStatus === 'Delivered' ? 'http://maps.google.com/mapfiles/ms/icons/green-dot.png' :
-                newStatus === 'In Transit' ? 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png' :
-                    newStatus === 'Rejected' ? 'http://maps.google.com/mapfiles/ms/icons/red-dot.png' :
-                        'http://maps.google.com/mapfiles/ms/icons/blue-dot.png'
-        );
-    }
-}
 
 function confirmDelivery(shipmentId) {
     console.log('confirmDelivery called with shipmentId:', shipmentId);
@@ -133,7 +157,7 @@ function confirmDelivery(shipmentId) {
     const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
     console.log('Token:', token);
 
-    fetch(`/Distributor/ConfirmDelivery?id=${ shipmentId }`, {
+    fetch(`/Distributor/ConfirmDelivery?id=${shipmentId}`, {
         method: 'POST',
         headers: {
             'RequestVerificationToken': token
@@ -163,3 +187,6 @@ function confirmDelivery(shipmentId) {
             alert('An error occurred while confirming delivery: ' + error.message);
         });
 }
+
+// تشغيل الخريطة عند تحميل الصفحة
+document.addEventListener('DOMContentLoaded', initMap);

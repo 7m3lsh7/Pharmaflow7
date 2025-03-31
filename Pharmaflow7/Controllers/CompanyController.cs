@@ -14,21 +14,21 @@ using System.Threading.Tasks;
 namespace Pharmaflow7.Controllers
 {
     [Authorize(Roles = "company")]
-    public class CompanyController : Controller
+    public class CompanyController : BaseController
     {
         private readonly AppDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger<CompanyController> _logger;
 
-        public CompanyController(AppDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<CompanyController> logger)
+        public CompanyController(AppDbContext context, UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ILogger<CompanyController> logger) : base(userManager)
         {
             _context = context;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
         }
-
+      
         public IActionResult Index()
         {
             return View();
@@ -40,8 +40,9 @@ namespace Pharmaflow7.Controllers
             try
             {
                 var user = await _userManager.GetUserAsync(User);
-                if (user == null || user.RoleType.ToLower() != "company")
+                 if (user == null || user.RoleType.ToLower() != "company")
                 {
+
                     _logger.LogWarning("Unauthorized access attempt to CompanyDashboard.");
                     return RedirectToAction("Login", "Auth");
                 }
@@ -259,14 +260,17 @@ namespace Pharmaflow7.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateShipment(ShipmentViewModel model)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null || user.RoleType != "company")
+            {
+                _logger.LogWarning("Unauthorized access attempt to CreateShipment.");
+                return RedirectToAction("Login", "Auth");
+            }
+
             try
             {
-                var user = await _userManager.GetUserAsync(User);
-                if (user == null || user.RoleType != "company")
-                {
-                    _logger.LogWarning("Unauthorized access attempt to CreateShipment.");
-                    return RedirectToAction("Login", "Auth");
-                }
+                _logger.LogInformation("Received shipment data: ProductId={ProductId}, Destination={Destination}, DistributorId={DistributorId}, StoreId={StoreId}",
+                    model.ProductId, model.Destination, model.DistributorId, model.StoreId);
 
                 if (!ModelState.IsValid)
                 {
@@ -277,6 +281,7 @@ namespace Pharmaflow7.Controllers
                     model.Stores = string.IsNullOrEmpty(model.DistributorId)
                         ? new List<Store>()
                         : await _context.Stores.Where(s => s.DistributorId == model.DistributorId).ToListAsync();
+                    TempData["Error"] = "Please correct the errors and try again: " + string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage));
                     return View(model);
                 }
 
@@ -287,21 +292,24 @@ namespace Pharmaflow7.Controllers
                     DistributorId = string.IsNullOrEmpty(model.DistributorId) ? null : model.DistributorId,
                     StoreId = model.StoreId.HasValue && model.StoreId != 0 ? model.StoreId : null,
                     CompanyId = user.Id,
-                    Status = "Pending"
+                    Status = "Pending"  
                 };
                 _context.Shipments.Add(shipment);
                 await _context.SaveChangesAsync();
-                _logger.LogInformation("Shipment {ShipmentId} created by company {CompanyId}", shipment.Id, user.Id);
+                _logger.LogInformation("Shipment {ShipmentId} created by company {CompanyId} with StoreId={StoreId}",
+                    shipment.Id, user.Id, shipment.StoreId);
 
                 return RedirectToAction("CompanyDashboard");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error creating shipment for company {CompanyId}", User?.Identity?.Name);
-                 model.Distributors = await _userManager.Users.Where(u => u.RoleType == "distributor").ToListAsync();
+                _logger.LogError(ex, "Error creating shipment for company {CompanyId}", user?.Id ?? "Unknown");
+                model.Products = await _context.Products.Where(p => p.CompanyId == user.Id).ToListAsync();
+                model.Distributors = await _userManager.Users.Where(u => u.RoleType == "distributor").ToListAsync();
                 model.Stores = string.IsNullOrEmpty(model.DistributorId)
                     ? new List<Store>()
                     : await _context.Stores.Where(s => s.DistributorId == model.DistributorId).ToListAsync();
+                TempData["Error"] = "An error occurred while creating the shipment: " + ex.Message;
                 return View(model);
             }
         }

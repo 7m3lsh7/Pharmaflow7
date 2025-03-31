@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class ss : Migration
+    public partial class one : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -249,8 +249,7 @@ namespace Pharmaflow7.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     DistributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StoreName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Latitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
-                    Longitude = table.Column<decimal>(type: "decimal(18,2)", nullable: false)
+                    StoreAddress = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -310,8 +309,6 @@ namespace Pharmaflow7.Migrations
                     CompanyId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     DistributorId = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     StoreId = table.Column<int>(type: "int", nullable: true),
-                    CurrentLocationLat = table.Column<double>(type: "float", nullable: false),
-                    CurrentLocationLng = table.Column<double>(type: "float", nullable: false),
                     IsAcceptedByDistributor = table.Column<bool>(type: "bit", nullable: true)
                 },
                 constraints: table =>

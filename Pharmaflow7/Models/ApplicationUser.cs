@@ -7,14 +7,14 @@ namespace Pharmaflow7.Models
     {
        
 
-        public string RoleType { get; set; } = string.Empty; // مطلوب دائمًا، لكن نعطيه قيمة افتراضية
-        public string? FullName { get; set; } // اختياري (للمستهلك)
-        public string? Address { get; set; } // اختياري (للمستهلك)
-        public string? CompanyName { get; set; } // اختياري (للشركة)
-        public string? LicenseNumber { get; set; } // اختياري (للشركة)
-        public string? ContactNumber { get; set; } // اختياري (للشركة والموزع)
-        public string? DistributorName { get; set; } // اختياري (للموزع)
-        public string? WarehouseAddress { get; set; } // اختياري (للموزع)
+        public string RoleType { get; set; } = string.Empty;  
+        public string? FullName { get; set; }  
+        public string? Address { get; set; }  
+        public string? CompanyName { get; set; }   
+        public string? LicenseNumber { get; set; }  
+        public string? ContactNumber { get; set; } 
+        public string? DistributorName { get; set; }  
+        public string? WarehouseAddress { get; set; }  
 
     }
 }
