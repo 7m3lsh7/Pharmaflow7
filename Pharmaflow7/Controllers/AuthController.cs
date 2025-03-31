@@ -24,6 +24,7 @@ namespace Pharmaflow7.Controllers
             _logger = logger;
         }
 
+        // عرض صفحة التسجيلnm
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
