@@ -38,14 +38,10 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 builder.Services.AddAuthentication()
     .AddGoogle(options =>
     {
-        options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-        options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-     })
-    .AddFacebook(options =>
-    {
-        options.AppId = builder.Configuration["Authentication:Facebook:AppId"];
-        options.AppSecret = builder.Configuration["Authentication:Facebook:AppSecret"];
-     });
+        options.ClientId = Environment.GetEnvironmentVariable("477759766587-ume5fsrch13p7aj43vlamn1k8ojaus4l.apps.googleusercontent.com");
+        options.ClientSecret = Environment.GetEnvironmentVariable("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");
+    });
+    
 
 // Cookie Configuration
 builder.Services.ConfigureApplicationCookie(options =>
