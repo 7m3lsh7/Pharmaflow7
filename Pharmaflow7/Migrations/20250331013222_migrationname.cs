@@ -5,7 +5,7 @@
 namespace Pharmaflow7.Migrations
 {
     /// <inheritdoc />
-    public partial class MigrationName : Migration
+    public partial class migrationname : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

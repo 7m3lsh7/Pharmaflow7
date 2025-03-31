@@ -6,18 +6,14 @@
     font-family: 'Arial', sans-serif;
 }
 
-
 /* Hero Section */
 .hero {
-   
     background-image: url('../image/artbreeder-image-2025-03-31t00_49_20.813z.jpeg');
-    height: 500px; /* ارتفاع الهيرو سيكشن */
-    width: 100%; /* تأكد من أنها تغطي العرض بالكامل */
-
-    background-size: cover; /* تجعل الصورة تغطي العنصر بالكامل مع الحفاظ على الأبعاد */
-    background-position: center; /* توسيط الصورة */
-    background-repeat: no-repeat; /* منع التكرار */
-
+    height: 500px;
+    width: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -26,7 +22,6 @@
     color: white;
     position: relative;
 }
-
 
     .hero::before {
         content: '';
@@ -38,7 +33,7 @@
         background: rgba(0, 0, 0, 0.4);
     }
 
-    .hero h1, .hero p, .hero button {
+    .hero h1, .hero p, .hero button, #scanner-container {
         position: relative;
         z-index: 1;
     }
@@ -69,6 +64,60 @@
             transform: scale(1.05);
         }
 
+/* Scanner Styling */
+.scanner-hidden {
+    display: none;
+}
+
+#scanner-container {
+    position: absolute;
+    top: 20%; /* فوق الزرار */
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    z-index: 10;
+}
+
+    #scanner-container h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+#video {
+    width: 100%;
+    max-width: 400px;
+    border: 2px solid #28a745;
+    border-radius: 10px;
+}
+
+#canvas {
+    display: none;
+}
+
+#result {
+    margin-top: 20px;
+    font-size: 18px;
+    color: #28a745;
+}
+
+#closeBtn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+    #closeBtn:hover {
+        background-color: #c82333;
+    }
+
 /* Features Section */
 .features {
     padding: 50px 20px;
@@ -91,11 +140,17 @@
 
 .feature-item {
     width: 250px;
+    min-height: 250px;
     padding: 20px;
     background-color: white;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
 }
 
     .feature-item:hover {
@@ -103,8 +158,9 @@
     }
 
     .feature-item img {
-        width: 50px;
-        margin-bottom: 15px;
+        width: 150px;
+        height: auto;
+        margin-bottom: 20px;
     }
 
     .feature-item h3 {
@@ -138,13 +194,23 @@
 }
 
 .step {
-    width: 200px;
+    width: 250px;
+    min-height: 250px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
     text-align: center;
 }
 
     .step img {
-        width: 80px;
-        margin-bottom: 15px;
+        width: 100px;
+        height: auto;
+        margin-bottom: 20px;
     }
 
     .step h3 {
@@ -245,55 +311,13 @@
         flex-direction: column;
         align-items: center;
     }
-}
-.feature-item {
-    width: 250px;
-    min-height: 250px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 10px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-    text-align: center;
-}
 
-    .feature-item img {
-        width: 150px;
-        height: auto;
-        margin-bottom: 20px;
+    #scanner-container {
+        top: 10%;
+        width: 90%;
     }
-.how-it-works {
-    padding: 50px 20px;
-    text-align: center;
-}
 
-.steps-container {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    flex-wrap: wrap;
-}
-
-.step {
-    width: 250px;
-    min-height: 250px;
-    padding: 20px;
-    background-color: white; 
-    border-radius: 10px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
-    display: flex; 
-    flex-direction: column;
-    justify-content: space-between; 
-    align-items: center; 
-    text-align: center;
-}
-
-    .step img {
-        width: 100px;
-        height: auto;
-        margin-bottom: 20px;
+    #video {
+        max-width: 300px;
     }
+}
