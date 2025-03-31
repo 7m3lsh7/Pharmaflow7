@@ -20,7 +20,7 @@ namespace Pharmaflow7.Controllers
             _roleManager = roleManager;
         }
 
-        // عرض صفحة التسجيل
+        // عرض صفحة التسجيلnm
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
