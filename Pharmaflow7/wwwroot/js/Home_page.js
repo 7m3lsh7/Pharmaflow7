@@ -6,14 +6,16 @@ scanBtn.addEventListener('click', () => {
     // window.location.href = '/verify-medicine';
 });
 
-// Scroll Animation for Features Section
+// Scroll Animation for Sections
 window.addEventListener('scroll', () => {
-    const features = document.querySelector('.features');
-    const position = features.getBoundingClientRect().top;
-    const screenPosition = window.innerHeight / 1.3;
+    const sections = document.querySelectorAll('.features, .how-it-works, .statistics, .testimonials');
+    sections.forEach(section => {
+        const position = section.getBoundingClientRect().top;
+        const screenPosition = window.innerHeight / 1.3;
 
-    if (position < screenPosition) {
-        features.style.opacity = '1';
-        features.style.transform = 'translateY(0)';
-    }
+        if (position < screenPosition) {
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }
+    });
 });

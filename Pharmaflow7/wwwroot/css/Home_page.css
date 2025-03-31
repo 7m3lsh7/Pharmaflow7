@@ -6,15 +6,18 @@
     font-family: 'Arial', sans-serif;
 }
 
-body {
-    line-height: 1.6;
-    color: #333;
-}
 
 /* Hero Section */
 .hero {
-    background: url('https://via.placeholder.com/1920x500?text=Medicine+Background') no-repeat center/cover;
-    height: 500px;
+   
+    background-image: url('../image/artbreeder-image-2025-03-31t00_49_20.813z.jpeg');
+    height: 500px; /* ارتفاع الهيرو سيكشن */
+    width: 100%; /* تأكد من أنها تغطي العرض بالكامل */
+
+    background-size: cover; /* تجعل الصورة تغطي العنصر بالكامل مع الحفاظ على الأبعاد */
+    background-position: center; /* توسيط الصورة */
+    background-repeat: no-repeat; /* منع التكرار */
+
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -23,6 +26,7 @@ body {
     color: white;
     position: relative;
 }
+
 
     .hero::before {
         content: '';
@@ -114,6 +118,114 @@ body {
         color: #666;
     }
 
+/* How It Works Section */
+.how-it-works {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+    .how-it-works h2 {
+        font-size: 32px;
+        margin-bottom: 40px;
+        color: #2c3e50;
+    }
+
+.steps-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.step {
+    width: 200px;
+    text-align: center;
+}
+
+    .step img {
+        width: 80px;
+        margin-bottom: 15px;
+    }
+
+    .step h3 {
+        font-size: 20px;
+        margin-bottom: 10px;
+        color: #28a745;
+    }
+
+    .step p {
+        font-size: 16px;
+        color: #666;
+    }
+
+/* Statistics Section */
+.statistics {
+    padding: 50px 20px;
+    text-align: center;
+    background-color: #28a745;
+    color: white;
+}
+
+    .statistics h2 {
+        font-size: 32px;
+        margin-bottom: 40px;
+    }
+
+.stats-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+    flex-wrap: wrap;
+}
+
+.stat-item h3 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.stat-item p {
+    font-size: 18px;
+}
+
+/* Testimonials Section */
+.testimonials {
+    padding: 50px 20px;
+    text-align: center;
+    background-color: #f9f9f9;
+}
+
+    .testimonials h2 {
+        font-size: 32px;
+        margin-bottom: 40px;
+        color: #2c3e50;
+    }
+
+.testimonials-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.testimonial-item {
+    width: 300px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+    .testimonial-item p {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .testimonial-item h4 {
+        font-size: 18px;
+        color: #28a745;
+    }
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .hero h1 {
@@ -129,8 +241,59 @@ body {
         font-size: 16px;
     }
 
-    .features-container {
+    .features-container, .steps-container, .stats-container, .testimonials-container {
         flex-direction: column;
         align-items: center;
     }
 }
+.feature-item {
+    width: 250px;
+    min-height: 250px;
+    padding: 20px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    text-align: center;
+}
+
+    .feature-item img {
+        width: 150px;
+        height: auto;
+        margin-bottom: 20px;
+    }
+.how-it-works {
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.steps-container {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.step {
+    width: 250px;
+    min-height: 250px;
+    padding: 20px;
+    background-color: white; 
+    border-radius: 10px; 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    display: flex; 
+    flex-direction: column;
+    justify-content: space-between; 
+    align-items: center; 
+    text-align: center;
+}
+
+    .step img {
+        width: 100px;
+        height: auto;
+        margin-bottom: 20px;
+    }
