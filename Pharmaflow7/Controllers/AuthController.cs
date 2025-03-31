@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Pharmaflow7.Models;
 using System;
 using Microsoft.AspNetCore.Authorization;
-
+//fg
 namespace Pharmaflow7.Controllers
 {
     public class AuthController : Controller
