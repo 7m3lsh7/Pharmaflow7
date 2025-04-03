@@ -4,11 +4,13 @@
     <title>Medicine Tracking Platform</title>
     <link rel="stylesheet" href="~/css/Home_page.css">
     <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
-@*     .. *@
+
     <!-- Hero Section -->
     <section class="hero">
         <h1>Ensure Your Safety - Track Your Medicine Easily!</h1>
-        <p>We use Blockchain and QR Code technology to ensure medicine authenticity and transparent distribution.</p>
+        <h2>Your Trusted Partner in Medicine Authenticity</h2>
+        <p>We use Blockchain and QR Code technology to ensure medicine authenticity, transparent distribution, and peace of mind for every user.</p>
+        <p>From production to your hands, know the full story of your medicine with a simple scan.</p>
         <div id="scanner-container" class="scanner-hidden">
             <h2>Scan Your Medicine QR Code</h2>
             <video id="video" autoplay></video>
@@ -16,27 +18,37 @@
             <p id="result">Scanning for QR Code...</p>
             <button id="closeBtn">Close Scanner</button>
         </div>
-        <button id="scanBtn">Scan QR Code Now</button>
+        <div class="hero-buttons">
+            <button id="scanBtn">Scan QR Code Now</button>
+        <button id="learnMoreBtn">Features for Companies & Warehouses</button>
+        </div>
+    </section>
+
+    <!-- Our Mission Section -->
+    <section class="mission">
+        <h2>Our Mission</h2>
+        <p>At Medicine Tracking Platform, we believe that everyone deserves access to safe, authentic medicine. With millions of counterfeit drugs circulating globally, our mission is to empower consumers and businesses alike with cutting-edge technology to verify medicine authenticity and ensure transparent supply chains.</p>
+        <p>Using Blockchain for tamper-proof records and QR codes for instant verification, we’re revolutionizing how the world tracks medicine—making healthcare safer, one scan at a time.</p>
     </section>
 
     <!-- Features Section -->
     <section class="features">
         <h2>Why Choose Our Platform?</h2>
         <div class="features-container">
-            <div class="feature-item">
-                <img src="~/image/instant verification.jpeg" />
+		<div class="feature-item">
+			<img src="~/image/qr.jpg" />
                 <h3>Instant Verification</h3>
-                <p>Scan the code and verify medicine authenticity in seconds.</p>
+                <p>Scan the QR code on your medicine package and get instant confirmation of its authenticity, including manufacturer details and approval status.</p>
             </div>
-            <div class="feature-item">
-                <img src="~/image/shipment tracking.png" />
+		<div class="feature-item">
+			<img src="~/image/shipment tracking.png" />
                 <h3>Shipment Tracking</h3>
-                <p>Follow your medicine’s journey from factory to your hands.</p>
+                <p>Track every step of your medicine’s journey—from the factory floor to your pharmacy—with real-time updates and a transparent timeline.</p>
             </div>
-            <div class="feature-item">
-                <img src="~/image/blockchain security.png" />
+		<div class="feature-item">
+			<img src="~/image/blockchain security.png" />
                 <h3>Blockchain Security</h3>
-                <p>Your data is protected with advanced Blockchain technology.</p>
+                <p>Our platform uses Blockchain to create an unalterable record of your medicine’s history, ensuring data integrity and protection against fraud.</p>
             </div>
         </div>
     </section>
@@ -48,17 +60,36 @@
             <div class="step">
                 <img src="~/image/sign up.jpg" alt="Step 1" />
                 <h3>Sign Up</h3>
-                <p>Create your account in just a few clicks.</p>
+                <p>Create your free account in just a few clicks. Whether you’re a consumer or a business, our platform is designed for ease of use.</p>
             </div>
             <div class="step">
                 <img src="~/image/qr.jpg" alt="Step 2" />
                 <h3>Scan QR</h3>
-                <p>Use your phone to scan the medicine’s QR code.</p>
+                <p>Use your smartphone or webcam to scan the unique QR code printed on your medicine packaging—it’s that simple!</p>
             </div>
             <div class="step">
                 <img src="~/image/get details.jpg" alt="Step 3" />
                 <h3>Get Details</h3>
-                <p>View production, expiry, and tracking info instantly.</p>
+                <p>Instantly access detailed information, including production date, expiry date, batch number, and full supply chain history.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Who We Serve Section -->
+    <section class="who-we-serve">
+        <h2>Who We Serve</h2>
+        <div class="serve-container">
+            <div class="serve-item">
+                <h3>Consumers</h3>
+                <p>Ensure the medicine you take is safe and authentic with a quick scan, giving you confidence in your healthcare choices.</p>
+            </div>
+            <div class="serve-item">
+                <h3>Pharmacies</h3>
+                <p>Verify incoming shipments and provide customers with transparency, building trust and improving operational efficiency.</p>
+            </div>
+            <div class="serve-item">
+                <h3>Manufacturers</h3>
+                <p>Secure your supply chain, combat counterfeiting, and provide end-to-end tracking for your products with our Blockchain solution.</p>
             </div>
         </div>
     </section>
@@ -70,14 +101,22 @@
             <div class="stat-item">
                 <h3>10,000+</h3>
                 <p>Medicines Verified</p>
+                <p class="stat-desc">Across multiple countries, ensuring safety for thousands of users.</p>
             </div>
             <div class="stat-item">
                 <h3>50+</h3>
                 <p>Partner Companies</p>
+                <p class="stat-desc">From manufacturers to pharmacies, collaborating for a safer supply chain.</p>
             </div>
             <div class="stat-item">
                 <h3>99%</h3>
                 <p>Tracking Accuracy</p>
+                <p class="stat-desc">Our technology guarantees near-perfect reliability in every scan.</p>
+            </div>
+            <div class="stat-item">
+                <h3>1M+</h3>
+                <p>Scans Performed</p>
+                <p class="stat-desc">Empowering users worldwide with instant access to medicine data.</p>
             </div>
         </div>
     </section>
@@ -97,4 +136,38 @@
         </div>
     </section>
 
+    <!-- Call to Action Section -->
+    <section class="cta">
+        <h2>Ready to Start Tracking?</h2>
+        <p>Join thousands of users and businesses who trust us to keep their medicine safe and authentic. Sign up today or scan your first QR code now!</p>
+        <div class="cta-buttons">
+            <button id="signupBtn">Sign Up Now</button>
+        </div>
+    </section>
+<!-- Learn How It Works Modal (Updated for Companies & Warehouses) -->
+<div id="learnModal" class="modal">
+    <div class="modal-content">
+        <span id="closeModal" class="close">×</span>
+        <h2>Features for Companies & Warehouses</h2>
+        <p>Discover how our platform empowers companies and warehouses with tools to secure supply chains, enhance transparency, and streamline operations.</p>
+        <div class="modal-steps">
+            <div class="modal-step">
+                <img src="~/image/blockchain security.png" class="step-icon" alt="Supply Chain Security" />
+                <p><strong>1. Supply Chain Security:</strong> Protect your products with Blockchain-backed tracking to prevent counterfeiting.</p>
+            </div>
+            <div class="modal-step">
+                <img src="~/image/shipment tracking.png" class="step-icon" alt="Shipment Monitoring" />
+                <p><strong>2. Real-Time Shipment Monitoring:</strong> Track shipments from production to delivery with live updates.</p>
+            </div>
+            <div class="modal-step">
+                <img src="~/image/material-management.png" class="step-icon" alt="Inventory Management" />
+                <p><strong>3. Inventory Management:</strong> Simplify stock control with detailed medicine data at your fingertips.</p>
+            </div>
+            <div class="modal-step">
+                <img src="~/image/monitoring.png" class="step-icon" alt="Compliance & Reporting" />
+                <p><strong>4. Compliance & Reporting:</strong> Generate reports for regulatory compliance and quality assurance.</p>
+            </div>
+        </div>
+    </div>
+</div>
     <script src="~/js/Home_page.js"></script>

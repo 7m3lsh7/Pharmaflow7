@@ -5,8 +5,11 @@ const canvas = document.getElementById('canvas');
 const result = document.getElementById('result');
 const closeBtn = document.getElementById('closeBtn');
 const ctx = canvas.getContext('2d');
+const learnMoreBtn = document.getElementById('learnMoreBtn');
+const learnModal = document.getElementById('learnModal');
+const closeModal = document.getElementById('closeModal');
 
-//  Scan
+// Scan QR Code
 scanBtn.addEventListener('click', () => {
     scannerContainer.classList.remove('scanner-hidden');
     navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
@@ -17,10 +20,9 @@ scanBtn.addEventListener('click', () => {
         })
         .catch(err => {
             result.textContent = 'Error: ' + err.message;
-            console.error(err); 
+            console.error(err);
         });
 });
-
 
 closeBtn.addEventListener('click', () => {
     scannerContainer.classList.add('scanner-hidden');
@@ -29,7 +31,6 @@ closeBtn.addEventListener('click', () => {
     }
     result.textContent = 'Scanning for QR Code...';
 });
-
 
 function scan() {
     if (!video.srcObject) return;
@@ -44,13 +45,29 @@ function scan() {
         video.srcObject.getTracks()[0].stop();
     } else {
         result.textContent = 'No QR Code detected yet...';
-        requestAnimationFrame(scan); 
+        requestAnimationFrame(scan);
     }
 }
 
+// Learn How It Works Modal (Updated for Companies & Warehouses)
+learnMoreBtn.addEventListener('click', () => {
+    learnModal.style.display = 'block';
+});
 
+closeModal.addEventListener('click', () => {
+    learnModal.style.display = 'none';
+});
+
+// Close modal when clicking outside
+window.addEventListener('click', (event) => {
+    if (event.target === learnModal) {
+        learnModal.style.display = 'none';
+    }
+});
+
+// Scroll Animation
 window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('.features, .how-it-works, .statistics, .testimonials');
+    const sections = document.querySelectorAll('.features, .how-it-works, .who-we-serve, .statistics, .testimonials');
     sections.forEach(section => {
         const position = section.getBoundingClientRect().top;
         const screenPosition = window.innerHeight / 1.3;
