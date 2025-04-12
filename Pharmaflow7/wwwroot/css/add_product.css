@@ -4,7 +4,9 @@
 .content {
     padding: 30px;
 }
-
+.mb-4 {
+    color: white;
+}
 .form-container {
     background: rgba(255, 255, 255, 0.15);
     border-radius: 15px;
