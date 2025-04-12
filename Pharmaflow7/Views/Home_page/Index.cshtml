@@ -1,173 +1,140 @@
-﻿
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medicine Tracking Platform</title>
-    <link rel="stylesheet" href="~/css/Home_page.css">
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.min.js"></script>
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PharmaFlow - Verify Your Medicine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css" />
+    <link rel="stylesheet" href="./css/Home_page.css" />
+</head>
+<body>
+    <!-- Action Bar -->
+    <div class="action-bar" data-aos="fade-down">
+        Join the PharmaFlow revolution! <a href="#cta">Get Started Now</a>
+    </div>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <h1>Ensure Your Safety - Track Your Medicine Easily!</h1>
-        <h2>Your Trusted Partner in Medicine Authenticity</h2>
-        <p>We use Blockchain and QR Code technology to ensure medicine authenticity, transparent distribution, and peace of mind for every user.</p>
-        <p>From production to your hands, know the full story of your medicine with a simple scan.</p>
-        <div id="scanner-container" class="scanner-hidden">
-            <h2>Scan Your Medicine QR Code</h2>
-            <video id="video" autoplay></video>
-            <canvas id="canvas"></canvas>
-            <p id="result">Scanning for QR Code...</p>
-            <button id="closeBtn">Close Scanner</button>
+    <header class="hero">
+        <div class="container">
+            <h1 data-aos="zoom-in">PharmaFlow</h1>
+            <p data-aos="fade-up" data-aos-delay="100">Scan, verify, and trust your medications in seconds</p>
+            <a href="#cta" class="btn" data-aos="fade-up" data-aos-delay="200">Start Scanning</a>
         </div>
-        <div class="hero-buttons">
-            <button id="scanBtn">Scan QR Code Now</button>
-        <button id="learnMoreBtn">Features for Companies & Warehouses</button>
-        </div>
-    </section>
+    </header>
 
-    <!-- Our Mission Section -->
-    <section class="mission">
-        <h2>Our Mission</h2>
-        <p>At Medicine Tracking Platform, we believe that everyone deserves access to safe, authentic medicine. With millions of counterfeit drugs circulating globally, our mission is to empower consumers and businesses alike with cutting-edge technology to verify medicine authenticity and ensure transparent supply chains.</p>
-        <p>Using Blockchain for tamper-proof records and QR codes for instant verification, we’re revolutionizing how the world tracks medicine—making healthcare safer, one scan at a time.</p>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features">
-        <h2>Why Choose Our Platform?</h2>
-        <div class="features-container">
-		<div class="feature-item">
-			<img src="~/image/qr.jpg" />
-                <h3>Instant Verification</h3>
-                <p>Scan the QR code on your medicine package and get instant confirmation of its authenticity, including manufacturer details and approval status.</p>
-            </div>
-		<div class="feature-item">
-			<img src="~/image/shipment tracking.png" />
-                <h3>Shipment Tracking</h3>
-                <p>Track every step of your medicine’s journey—from the factory floor to your pharmacy—with real-time updates and a transparent timeline.</p>
-            </div>
-		<div class="feature-item">
-			<img src="~/image/blockchain security.png" />
-                <h3>Blockchain Security</h3>
-                <p>Our platform uses Blockchain to create an unalterable record of your medicine’s history, ensuring data integrity and protection against fraud.</p>
+    <!-- Why Us Section -->
+    <section class="why-us">
+        <div class="container">
+            <div class="grid">
+                <div data-aos="fade-right">
+                    <h2>Why Choose PharmaFlow?</h2>
+                    <p>Fight counterfeit medicines with cutting-edge QR and Blockchain technology. Verify authenticity, track shipments, and ensure your safety with ease.</p>
+                    <a href="#" class="btn open-modal">Explore Features</a>
+                </div>
+                <div data-aos="fade-left">
+                    <lottie-player src="https://lottie.host/69b6c8f9-1b29-43db-9a85-a2bdfa0c9b8d/5Y4rNhkwFO.json" background="transparent" speed="1" style="width: 100%; max-width: 400px;" loop autoplay></lottie-player>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- How It Works Section -->
     <section class="how-it-works">
-        <h2>How It Works</h2>
-        <div class="steps-container">
-            <div class="step">
-                <img src="~/image/sign up.jpg" alt="Step 1" />
-                <h3>Sign Up</h3>
-                <p>Create your free account in just a few clicks. Whether you’re a consumer or a business, our platform is designed for ease of use.</p>
-            </div>
-            <div class="step">
-                <img src="~/image/qr.jpg" alt="Step 2" />
-                <h3>Scan QR</h3>
-                <p>Use your smartphone or webcam to scan the unique QR code printed on your medicine packaging—it’s that simple!</p>
-            </div>
-            <div class="step">
-                <img src="~/image/get details.jpg" alt="Step 3" />
-                <h3>Get Details</h3>
-                <p>Instantly access detailed information, including production date, expiry date, batch number, and full supply chain history.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Who We Serve Section -->
-    <section class="who-we-serve">
-        <h2>Who We Serve</h2>
-        <div class="serve-container">
-            <div class="serve-item">
-                <h3>Consumers</h3>
-                <p>Ensure the medicine you take is safe and authentic with a quick scan, giving you confidence in your healthcare choices.</p>
-            </div>
-            <div class="serve-item">
-                <h3>Pharmacies</h3>
-                <p>Verify incoming shipments and provide customers with transparency, building trust and improving operational efficiency.</p>
-            </div>
-            <div class="serve-item">
-                <h3>Manufacturers</h3>
-                <p>Secure your supply chain, combat counterfeiting, and provide end-to-end tracking for your products with our Blockchain solution.</p>
+        <div class="container">
+            <h2 data-aos="fade-up">How It Works</h2>
+            <div class="steps">
+                <div class="step" data-aos="zoom-in" data-aos-delay="100">
+                    <i class="fas fa-qrcode"></i>
+                    <p>Scan the QR code on your medicine</p>
+                </div>
+                <div class="step" data-aos="zoom-in" data-aos-delay="200">
+                    <i class="fas fa-check-circle"></i>
+                    <p>Verify details instantly</p>
+                </div>
+                <div class="step" data-aos="zoom-in" data-aos-delay="300">
+                    <i class="fas fa-truck"></i>
+                    <p>Track from source to you</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Statistics Section -->
-    <section class="statistics">
-        <h2>Our Impact</h2>
-        <div class="stats-container">
-            <div class="stat-item">
-                <h3>10,000+</h3>
-                <p>Medicines Verified</p>
-                <p class="stat-desc">Across multiple countries, ensuring safety for thousands of users.</p>
-            </div>
-            <div class="stat-item">
-                <h3>50+</h3>
-                <p>Partner Companies</p>
-                <p class="stat-desc">From manufacturers to pharmacies, collaborating for a safer supply chain.</p>
-            </div>
-            <div class="stat-item">
-                <h3>99%</h3>
-                <p>Tracking Accuracy</p>
-                <p class="stat-desc">Our technology guarantees near-perfect reliability in every scan.</p>
-            </div>
-            <div class="stat-item">
-                <h3>1M+</h3>
-                <p>Scans Performed</p>
-                <p class="stat-desc">Empowering users worldwide with instant access to medicine data.</p>
-            </div>
+    <!-- CTA Section -->
+    <section class="cta" id="cta">
+        <div class="container">
+            <h2 data-aos="zoom-in">Ready to Ensure Your Safety?</h2>
+            <p data-aos="fade-up" data-aos-delay="100">Join thousands trusting PharmaFlow for authentic medications.</p>
+            <a href="/Auth/Register" class="btn" data-aos="fade-up" data-aos-delay="200">Join Now</a>
         </div>
     </section>
 
-    <!-- Testimonials Section -->
-    <section class="testimonials">
-        <h2>What Our Users Say</h2>
-        <div class="testimonials-container">
-            <div class="testimonial-item">
-                <p>"This platform gave me peace of mind knowing my medicine is genuine!"</p>
-                <h4>John Doe, Consumer</h4>
-            </div>
-            <div class="testimonial-item">
-                <p>"Tracking shipments has never been easier. A game-changer for our business."</p>
-                <h4>Pharma Inc., Partner</h4>
-            </div>
-        </div>
-    </section>
 
-    <!-- Call to Action Section -->
-    <section class="cta">
-        <h2>Ready to Start Tracking?</h2>
-        <p>Join thousands of users and businesses who trust us to keep their medicine safe and authentic. Sign up today or scan your first QR code now!</p>
-        <div class="cta-buttons">
-            <button id="signupBtn">Sign Up Now</button>
-        </div>
-    </section>
-<!-- Learn How It Works Modal (Updated for Companies & Warehouses) -->
-<div id="learnModal" class="modal">
-    <div class="modal-content">
-        <span id="closeModal" class="close">×</span>
-        <h2>Features for Companies & Warehouses</h2>
-        <p>Discover how our platform empowers companies and warehouses with tools to secure supply chains, enhance transparency, and streamline operations.</p>
-        <div class="modal-steps">
-            <div class="modal-step">
-                <img src="~/image/blockchain security.png" class="step-icon" alt="Supply Chain Security" />
-                <p><strong>1. Supply Chain Security:</strong> Protect your products with Blockchain-backed tracking to prevent counterfeiting.</p>
-            </div>
-            <div class="modal-step">
-                <img src="~/image/shipment tracking.png" class="step-icon" alt="Shipment Monitoring" />
-                <p><strong>2. Real-Time Shipment Monitoring:</strong> Track shipments from production to delivery with live updates.</p>
-            </div>
-            <div class="modal-step">
-                <img src="~/image/material-management.png" class="step-icon" alt="Inventory Management" />
-                <p><strong>3. Inventory Management:</strong> Simplify stock control with detailed medicine data at your fingertips.</p>
-            </div>
-            <div class="modal-step">
-                <img src="~/image/monitoring.png" class="step-icon" alt="Compliance & Reporting" />
-                <p><strong>4. Compliance & Reporting:</strong> Generate reports for regulatory compliance and quality assurance.</p>
+    <!-- Features Modal -->
+    <div class="modal" id="features-modal">
+        <div class="modal-content">
+            <span class="modal-close">&times;</span>
+            <h2>Our Features</h2>
+            <div class="modal-grid">
+                <div class="modal-item">
+                    <i class="fas fa-search"></i>
+                    <p>Instant Authenticity Check</p>
+                </div>
+                <div class="modal-item">
+                    <i class="fas fa-truck"></i>
+                    <p>Real-Time Shipment Tracking</p>
+                </div>
+                <div class="modal-item">
+                    <i class="fas fa-lock"></i>
+                    <p>Blockchain Security</p>
+                </div>
+                <div class="modal-item">
+                    <i class="fas fa-globe"></i>
+                    <p>Global Pharmacy Network</p>
+                </div>
             </div>
         </div>
     </div>
-</div>
-    <script src="~/js/Home_page.js"></script>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({
+            duration: 1000,
+            once: true,
+            offset: 120
+        });
+
+        // Parallax effect for hero
+        window.addEventListener('scroll', () => {
+            const hero = document.querySelector('.hero');
+            const scrolled = window.pageYOffset;
+            hero.style.backgroundPositionY = `${scrolled * 0.5}px`;
+        });
+
+        // Modal handling
+        const modal = document.getElementById('features-modal');
+        const openModalBtn = document.querySelector('.open-modal');
+        const closeModalBtn = document.querySelector('.modal-close');
+
+        openModalBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // منع الـ scroll
+        });
+
+        closeModalBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto'; // إرجاع الـ scroll
+        });
+
+        // إغلاق الـ modal لما تضغطي برا المحتوى
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+    </script>   
+</body>
+</html>
