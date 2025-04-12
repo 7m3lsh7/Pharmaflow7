@@ -108,7 +108,7 @@ app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseStatusCodePagesWithReExecute("/Error/{0}");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home_page}/{action=Index}/{id?}");
