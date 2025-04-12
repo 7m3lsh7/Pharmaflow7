@@ -9,7 +9,6 @@ body {
     padding: 0;
 }
 
-    
 .content {
     padding: 30px;
 }
@@ -20,21 +19,25 @@ body {
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     transition: all 0.3s ease;
+
 }
 
     .card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+
     }
 
 .card-title {
     font-size: 1.2rem;
     font-weight: bold;
+    color: white;
 }
 
 .card-text {
     font-size: 2rem;
     font-weight: bold;
+    color: white;
 }
 
 .table {
@@ -47,6 +50,7 @@ body {
     .table th, .table td {
         border: none;
         padding: 15px;
+        color: white;
     }
 
     .table thead th {
