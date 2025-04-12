@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authentication.Facebook;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
 var encryptedConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(encryptedConnection));
