@@ -6,7 +6,7 @@
 }
 
 body {
-    background: #f5f8fb;
+    
     color: #1a1a1a;
     overflow-x: hidden;
 }
@@ -62,7 +62,7 @@ header.hero {
         margin-right: auto;
     }
 
-.btn {
+.btnN {
     background: #ffffff;
     color: #005f99;
     padding: 1rem 2.5rem;
@@ -77,7 +77,7 @@ header.hero {
     overflow: hidden;
 }
 
-    .btn::after {
+    .btnN::after {
         content: '';
         position: absolute;
         top: 50%;
@@ -90,12 +90,12 @@ header.hero {
         transition: width 0.4s ease, height 0.4s ease;
     }
 
-    .btn:hover::after {
+    .btnN:hover::after {
         width: 300px;
         height: 300px;
     }
 
-    .btn:hover {
+    .btnN:hover {
         background: #00b4d8;
         color: white;
         transform: scale(1.05);
