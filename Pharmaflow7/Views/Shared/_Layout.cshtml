@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="~/css/dash.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .username {
+            color: white !important;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -26,7 +31,7 @@
                         @if (User.Identity.IsAuthenticated)
                         {
                             var userRole = ViewData["RoleType"]?.ToString();
-                          
+
                             if (userRole == "company")
                             {
                                 <li class="nav-item">
