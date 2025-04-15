@@ -334,7 +334,7 @@ namespace Pharmaflow7.Controllers
                 {
                     model.ExistingStores = new List<Store>();
                 }
-                return View(model); // ترجع الـ View مع النموذج الكامل في حالة الخطأ
+                return View(model); 
             }
         }
         [HttpGet]

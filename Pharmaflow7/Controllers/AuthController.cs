@@ -2,10 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using Pharmaflow7.Models;
-using System;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-
+using System.Collections.Generic;
 
 namespace Pharmaflow7.Controllers
 {
@@ -24,7 +23,6 @@ namespace Pharmaflow7.Controllers
             _logger = logger;
         }
 
-        // عرض صفحة التسجيلnm
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
@@ -37,15 +35,13 @@ namespace Pharmaflow7.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Register(UserRegistrationModel model)
         {
-            _logger.LogInformation("📋 البيانات المُرسلة: Email={Email}, RoleType={RoleType}", model.Email, model.RoleType);
-
-            ModelState.Clear();
+            _logger.LogInformation("📋 Register attempt: Email={Email}, RoleType={RoleType}", model.Email, model.RoleType);
 
             if (string.IsNullOrEmpty(model.Email))
                 ModelState.AddModelError("Email", "Email is required.");
             if (string.IsNullOrEmpty(model.Password))
                 ModelState.AddModelError("Password", "Password is required.");
-            if (model.Password.Length < 8 || !model.Password.Any(char.IsUpper) || !model.Password.Any(char.IsDigit))
+            if (!string.IsNullOrEmpty(model.Password) && (model.Password.Length < 8 || !model.Password.Any(char.IsUpper) || !model.Password.Any(char.IsDigit)))
                 ModelState.AddModelError("Password", "Password must be at least 8 characters, with an uppercase letter and a number.");
             if (string.IsNullOrEmpty(model.RoleType))
                 ModelState.AddModelError("RoleType", "User type is required.");
@@ -80,7 +76,7 @@ namespace Pharmaflow7.Controllers
 
             if (!ModelState.IsValid)
             {
-                _logger.LogWarning("❌ ModelState غير صالح");
+                _logger.LogWarning("❌ ModelState invalid: {Errors}", string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
                 return View(model);
             }
 
@@ -101,17 +97,30 @@ namespace Pharmaflow7.Controllers
             var result = await _userManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                _logger.LogInformation("✅ تم إنشاء المستخدم بنجاح: {Email}", user.Email);
+                _logger.LogInformation("✅ User created: {Email}", user.Email);
                 if (!await _roleManager.RoleExistsAsync(model.RoleType))
                 {
                     await _roleManager.CreateAsync(new IdentityRole(model.RoleType));
                 }
                 await _userManager.AddToRoleAsync(user, model.RoleType);
-                await _signInManager.SignInAsync(user, isPersistent: false);
+
+              
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.RoleType),
+                    new Claim("RoleType", user.RoleType),
+                    new Claim("UserName", user.RoleType == "company" ? user.CompanyName : user.RoleType == "distributor" ? user.DistributorName : user.FullName ?? user.Email)
+                };
+                await _userManager.AddClaimsAsync(user, claims);
+
+              
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                _logger.LogInformation("✅ Signed in user: {Email} with claims: {Claims}", user.Email, string.Join(", ", claims.Select(c => $"{c.Type}: {c.Value}")));
                 return RedirectToDashboard(model.RoleType);
             }
 
-            _logger.LogError("❌ فشل إنشاء المستخدم: {Email}", user.Email);
+            _logger.LogError("❌ User creation failed: {Email}, Errors: {Errors}", user.Email, string.Join(", ", result.Errors.Select(e => e.Description)));
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
@@ -133,26 +142,47 @@ namespace Pharmaflow7.Controllers
         public async Task<IActionResult> Login(LoginViewModel model, string returnUrl = null)
         {
             ViewData["ReturnUrl"] = returnUrl;
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("تسجيل دخول ناجح لـ {Email}", model.Email);
-                    var user = await _userManager.FindByEmailAsync(model.Email);
-                    return RedirectToDashboard(user.RoleType);
-                }
-                if (result.IsLockedOut)
-                {
-                    _logger.LogWarning("المستخدم {Email} تم قفله بسبب محاولات فاشلة", model.Email);
-                    return RedirectToAction("Lockout");
-                }
-                else
-                {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                    return View(model);
-                }
+                _logger.LogWarning("❌ Invalid login attempt: {Email}", model.Email);
+                return View(model);
             }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                _logger.LogWarning("❌ User not found: {Email}", model.Email);
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View(model);
+            }
+
+           
+            var existingClaims = await _userManager.GetClaimsAsync(user);
+            await _userManager.RemoveClaimsAsync(user, existingClaims);
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, user.Email),
+                new Claim(ClaimTypes.Role, user.RoleType),
+                new Claim("RoleType", user.RoleType),
+                new Claim("UserName", user.RoleType == "company" ? user.CompanyName : user.RoleType == "distributor" ? user.DistributorName : user.FullName ?? user.Email)
+            };
+            await _userManager.AddClaimsAsync(user, claims);
+
+            var result = await _signInManager.PasswordSignInAsync(user.Email, model.Password, model.RememberMe, lockoutOnFailure: true);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("✅ Login successful: {Email} with claims: {Claims}", model.Email, string.Join(", ", claims.Select(c => $"{c.Type}: {c.Value}")));
+                return RedirectToDashboard(user.RoleType);
+            }
+
+            if (result.IsLockedOut)
+            {
+                _logger.LogWarning("❌ User locked out: {Email}", model.Email);
+                return RedirectToAction("Lockout");
+            }
+
+            _logger.LogWarning("❌ Invalid login attempt: {Email}", model.Email);
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
             return View(model);
         }
 
@@ -160,7 +190,7 @@ namespace Pharmaflow7.Controllers
         [AllowAnonymous]
         public IActionResult ExternalLogin(string provider, string returnUrl = null)
         {
-            var redirectUrl = Url.Action("ExternalLoginCallback", "Auth", new { returnUrl }, protocol: "https");
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Auth", new { returnUrl }, protocol: Request.Scheme);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             _logger.LogInformation("Starting External Login for {Provider} with redirect URL: {RedirectUrl}", provider, redirectUrl);
             return Challenge(properties, provider);
@@ -174,27 +204,39 @@ namespace Pharmaflow7.Controllers
             {
                 if (remoteError != null)
                 {
-                    _logger.LogWarning("خطأ من External Provider: {Error}", remoteError);
+                    _logger.LogWarning("External Provider error: {Error}", remoteError);
                     return RedirectToAction("Login");
                 }
 
                 var info = await _signInManager.GetExternalLoginInfoAsync();
                 if (info == null)
                 {
-                    _logger.LogError("ExternalLoginInfo is null. OAuth state might be missing or invalid.");
+                    _logger.LogError("ExternalLoginInfo is null");
                     return RedirectToAction("Login");
                 }
 
-                var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false, bypassTwoFactor: true);
+                var result = await _signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: true, bypassTwoFactor: true);
                 if (result.Succeeded)
                 {
-                    _logger.LogInformation("تسجيل دخول ناجح بـ {Provider}", info.LoginProvider);
+                    _logger.LogInformation("External login successful: {Provider}", info.LoginProvider);
                     var Email = info.Principal.FindFirstValue(ClaimTypes.Email);
                     var User = await _userManager.FindByEmailAsync(Email);
+                
+                    var existingClaims = await _userManager.GetClaimsAsync(User);
+                    await _userManager.RemoveClaimsAsync(User, existingClaims);
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.Name, User.Email),
+                        new Claim(ClaimTypes.Role, User.RoleType),
+                        new Claim("RoleType", User.RoleType),
+                        new Claim("UserName", User.RoleType == "company" ? User.CompanyName : User.RoleType == "distributor" ? User.DistributorName : User.FullName ?? User.Email)
+                    };
+                    await _userManager.AddClaimsAsync(User, claims);
+                    await _signInManager.SignInAsync(User, isPersistent: true);
+                    _logger.LogInformation("Claims updated for external login: {Claims}", string.Join(", ", claims.Select(c => $"{c.Type}: {c.Value}")));
                     return RedirectToDashboard(User.RoleType);
                 }
 
-                // لو المستخدم مش موجود، ننشئ حساب جديد
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
@@ -208,17 +250,13 @@ namespace Pharmaflow7.Controllers
                     if (createResult.Succeeded)
                     {
                         await _userManager.AddLoginAsync(user, info);
-                        if (string.IsNullOrEmpty(user.RoleType))
-                        {
-                            return RedirectToAction("CompleteRegistration", new { email });
-                        }
-                        await _signInManager.SignInAsync(user, isPersistent: false);
-                        return RedirectToDashboard(user.RoleType);
+                        return RedirectToAction("CompleteRegistration", new { email });
                     }
                     else
                     {
-                        _logger.LogError("فشل إنشاء المستخدم: {Errors}", string.Join(", ", createResult.Errors.Select(e => e.Description)));
-                        throw new Exception("فشل إنشاء المستخدم");
+                        _logger.LogError("Failed to create user: {Errors}", string.Join(", ", createResult.Errors.Select(e => e.Description)));
+                        ModelState.AddModelError("", "Failed to create user account.");
+                        return RedirectToAction("Login");
                     }
                 }
                 else if (string.IsNullOrEmpty(user.RoleType))
@@ -226,13 +264,25 @@ namespace Pharmaflow7.Controllers
                     return RedirectToAction("CompleteRegistration", new { email });
                 }
 
-                await _signInManager.SignInAsync(user, isPersistent: false);
+          
+                var userClaims = await _userManager.GetClaimsAsync(user);
+                await _userManager.RemoveClaimsAsync(user, userClaims);
+                var newClaims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.RoleType),
+                    new Claim("RoleType", user.RoleType),
+                    new Claim("UserName", user.RoleType == "company" ? user.CompanyName : user.RoleType == "distributor" ? user.DistributorName : user.FullName ?? user.Email)
+                };
+                await _userManager.AddClaimsAsync(user, newClaims);
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                _logger.LogInformation("External login signed in: {Email} with claims: {Claims}", user.Email, string.Join(", ", newClaims.Select(c => $"{c.Type}: {c.Value}")));
                 return RedirectToDashboard(user.RoleType);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "خطأ في ExternalLoginCallback: {Message}", ex.Message);
-                return StatusCode(500, "Internal Server Error");
+                _logger.LogError(ex, "Error in ExternalLoginCallback: {Message}", ex.Message);
+                return RedirectToAction("Login");
             }
         }
 
@@ -248,9 +298,16 @@ namespace Pharmaflow7.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CompleteRegistration(UserRegistrationModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogWarning("Invalid ModelState for CompleteRegistration: {Errors}", string.Join(", ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)));
+                return View(model);
+            }
+
             var user = await _userManager.FindByEmailAsync(model.Email);
             if (user == null)
             {
+                _logger.LogWarning("User not found for CompleteRegistration: {Email}", model.Email);
                 return RedirectToAction("Login");
             }
 
@@ -271,15 +328,45 @@ namespace Pharmaflow7.Controllers
                     await _roleManager.CreateAsync(new IdentityRole(model.RoleType));
                 }
                 await _userManager.AddToRoleAsync(user, model.RoleType);
-                await _signInManager.SignInAsync(user, isPersistent: false);
+
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.RoleType),
+                    new Claim("RoleType", user.RoleType),
+                    new Claim("UserName", user.RoleType == "company" ? user.CompanyName : user.RoleType == "distributor" ? user.DistributorName : user.FullName ?? user.Email)
+                };
+                await _userManager.AddClaimsAsync(user, claims);
+
+                await _signInManager.SignInAsync(user, isPersistent: true);
+                _logger.LogInformation("CompleteRegistration successful: {Email} with claims: {Claims}", user.Email, string.Join(", ", claims.Select(c => $"{c.Type}: {c.Value}")));
                 return RedirectToDashboard(model.RoleType);
             }
 
+            _logger.LogError("CompleteRegistration failed: {Errors}", string.Join(", ", result.Errors.Select(e => e.Description)));
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError("", error.Description);
             }
             return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            HttpContext.Response.Cookies.Delete(".AspNetCore.Identity.Application");
+            _logger.LogInformation("✅ User logged out");
+            return RedirectToAction("Login", "Auth");
+        }
+
+        [HttpGet]
+        [AllowAnonymous]
+        public IActionResult AccessDenied(string returnUrl = null)
+        {
+            ViewData["ReturnUrl"] = returnUrl;
+            return View();
         }
 
         private IActionResult RedirectToDashboard(string roleType)
@@ -297,39 +384,8 @@ namespace Pharmaflow7.Controllers
                 "consumer" => "Consumer",
                 "company" => "Company",
                 "distributor" => "Distributor",
-                _ => "Home"
+                _ => "Home_page"
             });
-        }
-
-        private IActionResult RedirectToLocal(string returnUrl)
-        {
-            if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Logout()
-        {
-            await _signInManager.SignOutAsync();
-            _logger.LogInformation("✅ تم تسجيل الخروج");
-            return RedirectToAction("Login", "Auth");
-        }
-
-        
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IActionResult AccessDenied(string returnUrl = null)
-        {
-            ViewData["ReturnUrl"] = returnUrl;
-            return View();
         }
     }
 }
-
-   
-

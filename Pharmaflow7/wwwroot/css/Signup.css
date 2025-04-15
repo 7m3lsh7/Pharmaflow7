@@ -14,7 +14,7 @@
     width: 100%;
     z-index: -1;
 }
-                           /**/
+                 
 .bubble {
     position: absolute;
     bottom: -50px;
@@ -258,14 +258,14 @@
     }
 
 .error-message {
-    display: none; /* Hidden by default */
+    display: none;
     background-color: #ff6b6b;
     color: white;
     padding: 8px 12px;
     border-radius: 8px;
     font-size: 14px;
     position: absolute;
-    bottom: -40px; /* Position below the input */
+    bottom: -40px;
     left: 0;
     width: 100%;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
