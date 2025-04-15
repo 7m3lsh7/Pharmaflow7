@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,10 +11,8 @@ using Pharmaflow7.Models;
 using System.Security.Claims;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.Facebook;
 
 var builder = WebApplication.CreateBuilder(args);
-
 
 var encryptedConnection = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -25,48 +24,55 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
-    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireNonAlphanumeric = false; // غيرناها لـ false عشان تتماشى مع الـ Register
     options.Password.RequiredLength = 8;
 
     options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
     options.Lockout.MaxFailedAccessAttempts = 5;
     options.Lockout.AllowedForNewUsers = true;
+
+    options.SignIn.RequireConfirmedAccount = false; // لو عندك تأكيد إيميل، عدّليه
 })
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-// Authentication with Google and Facebook
+// Authentication with Google
 builder.Services.AddAuthentication()
+    .AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+    {
+        options.Cookie.HttpOnly = true;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.Cookie.SameSite = SameSiteMode.Strict;
+        options.ExpireTimeSpan = TimeSpan.FromDays(30);
+        options.SlidingExpiration = true;
+        options.Cookie.Name = "PharmaFlowAuth";
+        options.LoginPath = "/Auth/Login";
+        options.LogoutPath = "/Auth/Logout";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+
+        options.Events.OnSigningIn = async context =>
+        {
+            var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
+            var user = await userManager.GetUserAsync(context.Principal);
+            if (user != null)
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Email),
+                    new Claim(ClaimTypes.Role, user.RoleType ?? "consumer"),
+                    new Claim("RoleType", user.RoleType ?? "consumer"),
+                    new Claim("UserName", user.RoleType == "company" ? user.CompanyName : user.RoleType == "distributor" ? user.DistributorName : user.FullName ?? user.Email)
+                };
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                context.Principal.AddIdentity(identity);
+            }
+        };
+    })
     .AddGoogle(options =>
     {
         options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
         options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
     });
-   
-
-// Cookie Configuration
-builder.Services.ConfigureApplicationCookie(options =>
-{
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    options.LoginPath = "/Auth/Login";
-    options.LogoutPath = "/Auth/Logout";
-    options.AccessDeniedPath = "/Auth/AccessDenied";
-    options.SlidingExpiration = true;
-
-    options.Events.OnSigningIn = async context =>
-    {
-        var userManager = context.HttpContext.RequestServices.GetRequiredService<UserManager<ApplicationUser>>();
-        var user = await userManager.GetUserAsync(context.Principal);
-        if (user != null && user.RoleType != null)
-        {
-            var claims = new List<Claim> { new Claim("RoleType", user.RoleType) };
-            context.Principal.AddIdentity(new ClaimsIdentity(claims));
-        }
-    };
-});
 
 // Rate Limiting
 builder.Services.AddRateLimiter(options =>
@@ -104,7 +110,7 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-app.UseCookiePolicy(); // أضفت ده عشان الـ OAuth يشتغل صح
+app.UseCookiePolicy();
 app.UseRouting();
 app.UseRateLimiter();
 app.UseAuthentication();

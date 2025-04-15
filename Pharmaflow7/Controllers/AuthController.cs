@@ -104,7 +104,7 @@ namespace Pharmaflow7.Controllers
                 }
                 await _userManager.AddToRoleAsync(user, model.RoleType);
 
-              
+                // إضافة Claims
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Email),
@@ -114,7 +114,7 @@ namespace Pharmaflow7.Controllers
                 };
                 await _userManager.AddClaimsAsync(user, claims);
 
-              
+                // تسجيل الدخول مع الـ Claims
                 await _signInManager.SignInAsync(user, isPersistent: true);
                 _logger.LogInformation("✅ Signed in user: {Email} with claims: {Claims}", user.Email, string.Join(", ", claims.Select(c => $"{c.Type}: {c.Value}")));
                 return RedirectToDashboard(model.RoleType);
@@ -156,7 +156,7 @@ namespace Pharmaflow7.Controllers
                 return View(model);
             }
 
-           
+            // تحديث الـ Claims
             var existingClaims = await _userManager.GetClaimsAsync(user);
             await _userManager.RemoveClaimsAsync(user, existingClaims);
             var claims = new List<Claim>
@@ -221,7 +221,7 @@ namespace Pharmaflow7.Controllers
                     _logger.LogInformation("External login successful: {Provider}", info.LoginProvider);
                     var Email = info.Principal.FindFirstValue(ClaimTypes.Email);
                     var User = await _userManager.FindByEmailAsync(Email);
-                
+                    // تحديث الـ Claims
                     var existingClaims = await _userManager.GetClaimsAsync(User);
                     await _userManager.RemoveClaimsAsync(User, existingClaims);
                     var claims = new List<Claim>
@@ -237,6 +237,7 @@ namespace Pharmaflow7.Controllers
                     return RedirectToDashboard(User.RoleType);
                 }
 
+                // إنشاء مستخدم جديد لو مش موجود
                 var email = info.Principal.FindFirstValue(ClaimTypes.Email);
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null)
@@ -264,7 +265,7 @@ namespace Pharmaflow7.Controllers
                     return RedirectToAction("CompleteRegistration", new { email });
                 }
 
-          
+                // تحديث الـ Claims للمستخدم الموجود
                 var userClaims = await _userManager.GetClaimsAsync(user);
                 await _userManager.RemoveClaimsAsync(user, userClaims);
                 var newClaims = new List<Claim>
@@ -329,6 +330,7 @@ namespace Pharmaflow7.Controllers
                 }
                 await _userManager.AddToRoleAsync(user, model.RoleType);
 
+                // إضافة Claims
                 var claims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.Email),
