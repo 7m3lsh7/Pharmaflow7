@@ -17,7 +17,7 @@ namespace Pharmaflow7.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<DistributorController> _logger;
 
-        public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<DistributorController> logger)  : base(userManager)
+        public DistributorController(AppDbContext context, UserManager<ApplicationUser> userManager, ILogger<DistributorController> logger) : base(userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -30,12 +30,91 @@ namespace Pharmaflow7.Controllers
         }
 
         [HttpGet]
+        public async Task<IActionResult> GetDashboardData()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null || user.RoleType != "distributor")
+                {
+                    _logger.LogWarning("Unauthorized access attempt to GetDashboardData.");
+                    return Unauthorized();
+                }
+
+                var shipments = await _context.Shipments
+                    .Where(s => s.DistributorId == user.Id)
+                    .ToListAsync();
+
+                var inventoryCount = shipments
+                    .Where(s => s.Status == "Delivered")
+                    .Sum(s => s.Quantity ?? 0); // null check لـ Quantity
+
+                var incomingShipments = shipments
+                    .Count(s => s.Status == "In Transit" && s.IsAcceptedByDistributor == true);
+
+                var outgoingShipments = shipments
+                    .Count(s => s.Status == "In Transit" && s.IsAcceptedByDistributor == false);
+
+                var data = new
+                {
+                    InventoryCount = inventoryCount,
+                    IncomingShipments = incomingShipments,
+                    OutgoingShipments = outgoingShipments
+                };
+
+                _logger.LogInformation("Dashboard data retrieved for distributor {DistributorId}", user.Id);
+                return Json(data);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving dashboard data for distributor {DistributorId}", User?.Identity?.Name);
+                return StatusCode(500, "An error occurred while retrieving dashboard data.");
+            }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetShipments()
+        {
+            try
+            {
+                var user = await _userManager.GetUserAsync(User);
+                if (user == null || user.RoleType != "distributor")
+                {
+                    _logger.LogWarning("Unauthorized access attempt to GetShipments.");
+                    return Unauthorized();
+                }
+
+                var shipments = await _context.Shipments
+                    .Where(s => s.DistributorId == user.Id)
+                    .Include(s => s.Product)
+                    .Include(s => s.Store)
+                    .Select(s => new
+                    {
+                        Id = s.Id,
+                        Type = s.Product != null ? s.Product.Name : "Unknown",
+                        Quantity = s.Quantity ?? 0, // null check لـ Quantity
+                        Date = s.CreatedAt.HasValue ? s.CreatedAt.Value.ToString("yyyy-MM-dd") : "N/A", // null check لـ CreatedAt
+                        Status = s.Status
+                    })
+                    .ToListAsync();
+
+                _logger.LogInformation("Shipments retrieved for distributor {DistributorId}", user.Id);
+                return Json(shipments);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error retrieving shipments for distributor {DistributorId}", User?.Identity?.Name);
+                return StatusCode(500, "An error occurred while retrieving shipments.");
+            }
+        }
+
+        [HttpGet]
         public async Task<IActionResult> TrackShipment()
         {
             try
             {
                 var user = await _userManager.GetUserAsync(User);
-                 if (user == null || user.RoleType != "distributor")
+                if (user == null || user.RoleType != "distributor")
                 {
                     _logger.LogWarning("Unauthorized access attempt to TrackShipment.");
                     return RedirectToAction("Login", "Auth");
@@ -48,7 +127,7 @@ namespace Pharmaflow7.Controllers
                     .Select(s => new ShipmentViewModel
                     {
                         Id = s.Id,
-                        ProductName = s.Product.Name,
+                        ProductName = s.Product != null ? s.Product.Name : "Unknown",
                         Destination = s.Destination,
                         Status = s.Status,
                         StoreAddress = s.Store != null ? s.Store.StoreAddress : "Not Assigned",
@@ -94,6 +173,7 @@ namespace Pharmaflow7.Controllers
                 }
 
                 shipment.Status = "Delivered";
+                shipment.Quantity = shipment.Quantity ?? 0; // تأكدي إن القيمة موجودة
                 _context.Shipments.Update(shipment);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Delivery confirmed for shipment {ShipmentId} by distributor {DistributorId}", id, user.Id);
@@ -131,6 +211,7 @@ namespace Pharmaflow7.Controllers
 
                 shipment.IsAcceptedByDistributor = true;
                 shipment.Status = "In Transit";
+                shipment.Quantity = shipment.Quantity ?? 0; // تأكدي إن القيمة موجودة
                 _context.Shipments.Update(shipment);
                 await _context.SaveChangesAsync();
                 _logger.LogInformation("Shipment {ShipmentId} accepted by distributor {DistributorId}", id, user.Id);
@@ -334,9 +415,10 @@ namespace Pharmaflow7.Controllers
                 {
                     model.ExistingStores = new List<Store>();
                 }
-                return View(model); // ترجع الـ View مع النموذج الكامل في حالة الخطأ
+                return View(model);
             }
         }
+
         [HttpGet]
         public IActionResult InventoryManagement()
         {
