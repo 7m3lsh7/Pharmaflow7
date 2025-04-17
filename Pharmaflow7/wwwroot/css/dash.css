@@ -1,7 +1,7 @@
-﻿/* wwwroot/css/styles.css */
+﻿
 body {
     font-family: 'Poppins', sans-serif;
-   /*  background: linear-gradient(135deg, #042557, #042557);*/
+
     background: linear-gradient(333deg, #050859, #05162f);
     color: white;
     min-height: 100vh;
@@ -86,4 +86,7 @@ body {
     position: relative;
     height: 300px;
     width: 100%;
+}
+.h{
+    color:white;
 }

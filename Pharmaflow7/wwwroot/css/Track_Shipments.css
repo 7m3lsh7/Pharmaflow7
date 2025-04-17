@@ -1,10 +1,12 @@
-﻿/* تنسيق عام للصفحة */
+﻿
 .main-content {
     padding: 20px;
     background-color: #f8f9fa;
     min-height: 100vh;
 }
-
+.h{
+    color:white;
+}
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -17,7 +19,6 @@ h1 {
     text-align: center;
 }
 
-/* تنسيق الجدول */
 .result {
     margin-top: 20px;
 }
@@ -54,7 +55,7 @@ h1 {
         background-color: #f1f1f1;
     }
 
-/* تنسيق الأزرار */
+
 .accept-btn {
     background-color: #28a745;
     color: white;
@@ -84,7 +85,6 @@ h1 {
         background-color: #c82333;
     }
 
-/* تنسيق النصوص */
 .text-success {
     color: #28a745;
     font-weight: bold;
@@ -95,7 +95,6 @@ h1 {
     font-weight: bold;
 }
 
-/* تنسيق الخريطة */
 .map {
     height: 400px;
     width: 100%;

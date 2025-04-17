@@ -11,6 +11,11 @@
     <link rel="stylesheet" href="~/css/dash.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        .username {
+            color: white !important;
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -60,9 +65,7 @@
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="AddStore">Add Store</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="ManageStores">Manage Stores</a>
-                                </li>
+                               
                                 <li class="nav-item">
                                     <a class="nav-link text-light" asp-area="" asp-controller="Distributor" asp-action="report">Report</a>
                                 </li>

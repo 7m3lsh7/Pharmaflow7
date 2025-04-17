@@ -2,26 +2,19 @@
 @{
     ViewData["Title"] = "Company Dashboard";
 }
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - Medicine Tracking</title>
-    <!-- روابط المكتبات الخارجية -->
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
-    <!-- ربط ملف CSS -->
     <link rel="stylesheet" href="/css/dash.css" asp-append-version="true">
-</head>
-<body>
-    <!-- Main Content -->
+
     <div class="content">
         <h1 class="mb-4">Company Dashboard</h1>
 
-        <!-- Overview Cards -->
+       
         <div class="row mb-4">
             <div class="col-md-3">
                 <div class="card p-4 text-center">
@@ -65,7 +58,6 @@
         </div>
         </div>
 
-        <!-- Active Shipments Table -->
         <div class="mb-4">
             <h3>Active Shipments</h3>
             <table class="table">
@@ -118,7 +110,6 @@
             </table>
         </div>
 
-        <!-- Performance Reports -->
         <div class="row">
             <div class="col-md-6">
                 <h3>Sales Performance</h3>
@@ -135,10 +126,9 @@
         </div>
     </div>
 
-    <!-- روابط السكربتات -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sales Performance Chart
+       
         const salesCtx = document.getElementById('salesChart').getContext('2d');
         new Chart(salesCtx, {
             type: 'line',
@@ -158,7 +148,7 @@
             }
         });
 
-        // Distribution Overview Chart
+     
         const distributionCtx = document.getElementById('distributionChart').getContext('2d');
         new Chart(distributionCtx, {
             type: 'pie',
@@ -171,5 +161,3 @@
             }
         });
     </script>
-</body>
-</html>

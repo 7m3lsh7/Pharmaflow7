@@ -3,9 +3,6 @@
     ViewData["Title"] = "Add Store";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - Pharmaflow</title>
@@ -18,12 +15,10 @@
             width: 100%;
         }
     </style>
-</head>
-<body>
+
     <div class="container mt-4">
         <h1 class="mb-4">Add New Store</h1>
 
-        <!-- Form لإضافة مخزن جديد -->
         <form asp-action="AddStore" method="post" id="addStoreForm">
             <div class="mb-3">
                 <label asp-for="NewStore.StoreName" class="form-label">Store Name</label>
@@ -39,7 +34,6 @@
             <button type="submit" class="btn btn-primary">Add Store</button>
         </form>
 
-        <!-- جدول المخازن الموجودة -->
         <div class="mt-5">
             <h3>Existing Stores</h3>
             @if (Model.ExistingStores.Any())
@@ -118,5 +112,3 @@
             }
         });
     </script>
-</body>
-</html>
